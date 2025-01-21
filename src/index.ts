@@ -72,6 +72,9 @@ export async function getActiveJobs(): Promise<string[]> {
 
     return jobs;
 }
+
+
+export async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<number | null> { // Changed return type to number | null
     const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
 
     // Get the event filter for the Work event
@@ -86,24 +89,13 @@ export async function getActiveJobs(): Promise<string[]> {
             const lastEvent = events[events.length - 1];
             return lastEvent.blockNumber;
         } else {
-            // No Work events found in the last 1000 blocks
+            // No Work events found in the specified block range
             return null;
         }
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
         return null;
     }
-}
-    const numJobs = await sequencerContract.numJobs();
-    const numJobsBN = ethers.BigNumber.from(numJobs);
-    const jobs: string[] = [];
-
-    for (let i = 0; i < numJobsBN.toNumber(); i++) {
-        const jobAddress: string = await sequencerContract.jobAt(i);
-        jobs.push(jobAddress);
-    }
-
-    return jobs;
 }
 
 
@@ -114,14 +106,14 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.utils.id("Work(bytes32,address)");
     const filter: ethers.providers.Filter = {
-        address: jobs,
+        address: jobs, // Corrected line - string[] is valid here
         topics: [workEventSignature],
         fromBlock,
         toBlock: currentBlock,
     };
 
     // Fetch all Work events in the last 1000 blocks for all jobs
-    let events: ethers.Event[] = [];
+    let events: ethers.providers.Log[] = []; // Changed type to Log[]
     try {
         events = await provider.getLogs(filter);
     } catch (error) {
@@ -131,7 +123,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     // Map to store the last worked block for each job
     const lastWorkedBlocks: { [address: string]: number } = {};
 
-    for (const event of events) {
+    for (const event of events) { // 'event' is now correctly inferred as ethers.providers.Log
         const jobAddress = event.address.toLowerCase();
         if (!lastWorkedBlocks[jobAddress] || event.blockNumber > lastWorkedBlocks[jobAddress]) {
             lastWorkedBlocks[jobAddress] = event.blockNumber;
