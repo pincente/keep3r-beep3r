@@ -1,6 +1,9 @@
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
+
 import sequencerAbi from './abis/sequencerAbi.json';
+import jobAbi from './abis/IJobAbi.json';
+import fetch from 'node-fetch'; // Make sure to import fetch
 
 // Load environment variables from .env file
 dotenv.config();
@@ -10,10 +13,6 @@ const ETHEREUM_RPC_URL = process.env.ETHEREUM_RPC_URL;
 
 if (!ETHEREUM_RPC_URL) {
   throw new Error("Missing ETHEREUM_RPC_URL in environment variables.");
-    // Set up a polling interval to process new blocks
-    setInterval(async () => {
-        await processNewBlock();
-    }, 15000); // Poll every 15 seconds (adjust as needed)
 }
 
 // Create the Ethereum provider
@@ -28,6 +27,34 @@ interface JobState {
     address: string;
     lastWorkedBlock: number;
     consecutiveUnworkedBlocks: number;
+}
+
+// Define the sendDiscordAlert function
+async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, currentBlock: number): Promise<void> {
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+    if (!webhookUrl) {
+        console.error("Discord webhook URL not configured.");
+        return;
+    }
+
+    const message = {
+        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks} blocks (current block: ${currentBlock}).`
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(message),
+        });
+        if (!response.ok) {
+            console.error(`Failed to send Discord alert. Status: ${response.status}`);
+        } else {
+            console.log(`Alert sent to Discord for job ${jobAddress}.`);
+        }
+    } catch (error) {
+        console.error("Error sending Discord alert:", error);
+    }
 }
 
 const jobStates: Map<string, JobState> = new Map();
@@ -74,11 +101,11 @@ async function main() {
     } catch (error) {
         console.error("Error connecting to Ethereum network:", error);
     }
+    // Start processing new blocks at intervals
+    setInterval(async () => {
+        await processNewBlock();
+    }, 15000); // Poll every 15 seconds (adjust as needed)
 }
-
-// Run the main function
-main();
-import jobAbi from './abis/IJobAbi.json';
 
 async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<boolean> {
     try {
@@ -105,7 +132,6 @@ async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBloc
         return false;
     }
 }
-}
 
 async function processNewBlock(): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
@@ -119,7 +145,7 @@ async function processNewBlock(): Promise<void> {
             jobState.lastWorkedBlock = currentBlock;
             jobState.consecutiveUnworkedBlocks = 0;
         } else {
-            jobState.consecutiveUnworkedBlocks += currentBlock - jobState.lastWorkedBlock;
+            jobState.consecutiveUnworkedBlocks += (currentBlock - jobState.lastWorkedBlock);
         }
 
         // Check if the job hasn't been worked for 1000 consecutive blocks
@@ -133,3 +159,6 @@ async function processNewBlock(): Promise<void> {
         console.log(`Job ${jobState.address}:`, jobState);
     }
 }
+
+// Run the main function
+main();
