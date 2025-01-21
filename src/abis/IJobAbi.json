@@ -1,5 +1,14 @@
 [
   {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "network", "type": "bytes32" },
+      { "indexed": true, "name": "keeper", "type": "address" }
+    ],
+    "name": "Work",
+    "type": "event"
+  },
+  {
     "constant": false,
     "inputs": [{ "name": "network", "type": "bytes32" }],
     "name": "work",

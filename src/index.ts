@@ -73,13 +73,50 @@ export async function getActiveJobs(): Promise<string[]> {
     return jobs;
 }
 
+async function getLastWorkedBlock(jobAddress: string, fromBlock: number, toBlock: number): Promise<number | null> {
+    const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
+
+    // Get the event filter for the Work event
+    const workEventFilter = jobContract.filters.Work();
+
+    try {
+        // Fetch the logs for the Work event between fromBlock and toBlock
+        const events = await jobContract.queryFilter(workEventFilter, fromBlock, toBlock);
+
+        if (events.length > 0) {
+            // Return the block number of the most recent Work event
+            const lastEvent = events[events.length - 1];
+            return lastEvent.blockNumber;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching Work events for job ${jobAddress}:`, error);
+        return null;
+    }
+}
+
 async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
+    const fromBlock = currentBlock - 1000 >= 0 ? currentBlock - 1000 : 0;
+
     for (const jobAddress of jobs) {
+        const lastWorkedBlock = await getLastWorkedBlock(jobAddress, fromBlock, currentBlock);
+
+        let consecutiveUnworkedBlocks = 0;
+
+        if (lastWorkedBlock !== null) {
+            // Job was worked in the last 1000 blocks
+            consecutiveUnworkedBlocks = currentBlock - lastWorkedBlock;
+        } else {
+            // Job was not worked in the last 1000 blocks
+            consecutiveUnworkedBlocks = 1000;
+        }
+
         jobStates.set(jobAddress, {
             address: jobAddress,
             lastCheckedBlock: currentBlock,
-            consecutiveUnworkedBlocks: 0,
+            consecutiveUnworkedBlocks: consecutiveUnworkedBlocks,
         });
     }
 }
@@ -120,7 +157,12 @@ async function processNewBlock(): Promise<void> {
             const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
             const [canWork, args] = await jobContract.workable(networkIdentifier);
 
-            const blocksSinceLastCheck = currentBlock - jobState.lastCheckedBlock;
+            let blocksSinceLastCheck = currentBlock - jobState.lastCheckedBlock;
+
+            // Ensure we don't query more than 1000 blocks
+            if (blocksSinceLastCheck > 1000) {
+                blocksSinceLastCheck = 1000;
+            }
 
             if (!canWork) {
                 // Job does not need work, so it has been worked recently
