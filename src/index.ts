@@ -1,12 +1,9 @@
-import { ethers } from 'ethers';
+import { ethers, Filter, Log } from 'ethers';
 import * as dotenv from 'dotenv';
 
 import sequencerAbi from './abis/sequencerAbi.json';
 import fetch from 'node-fetch'; // Make sure to import fetch
 
-type CustomFilter = Omit<ethers.providers.Filter, 'address'> & {
-  address?: string | string[];
-};
 import jobAbi from './abis/IJobAbi.json';
 
 // Load environment variables from .env file
@@ -109,7 +106,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.id("Work(bytes32,address)");
-    const filter: ethers.Filter = {
+    const filter: Filter = {
         address: jobs,
         topics: [workEventSignature],
         fromBlock: Number(fromBlock),
@@ -117,7 +114,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     };
 
     // Fetch all Work events in the last 1000 blocks for all jobs
-    let events: ethers.providers.Log[] = [];
+    let events: Log[] = [];
     try {
         events = await provider.getLogs(filter);
     } catch (error) {
@@ -125,7 +122,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     }
 
     // Map to store the last worked block for each job
-    const lastWorkedBlocks: { [address: string]: number } = {};
+    const lastWorkedBlocks: { [address: string]: bigint } = {};
 
     for (const event of events) { // 'event' is now correctly inferred as ethers.providers.Log
         const jobAddress = event.address.toLowerCase();
@@ -184,7 +181,7 @@ export async function processNewBlock(): Promise<void> {
     const currentBlock: bigint = await provider.getBlockNumber();
     console.log(`Processing block ${currentBlock.toString()}`);
 
-    const networkIdentifier = ethers.constants.HashZero; // Use the appropriate network identifier
+    const networkIdentifier = ethers.ZeroHash; // Use the appropriate network identifier
 
     for (const jobState of jobStates.values()) {
         try {
