@@ -25,6 +25,7 @@ const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, p
 
 interface JobState {
     address: string;
+    lastWorkedBlock: number;
     lastCheckedBlock: number;
     consecutiveUnworkedBlocks: number;
 }
