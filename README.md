@@ -62,7 +62,7 @@ Keep3r Beep3r is a NodeJS application that monitors MakerDAO's automated jobs an
 2. **Running with Docker:**
 
    ```bash
-   docker run -d -e ETHEREUM_RPC_URL="..." -e DISCORD_WEBHOOK_URL="..." keep3r-beep3r
+   docker run --rm --env-file .env keep3r-beep3r
    ```
 
 ## Testing
