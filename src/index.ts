@@ -108,12 +108,12 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
     // Create a filter for all Work events from the jobs
-    const workEventSignature = ethers.utils.id("Work(bytes32,address)");
-    const filter: CustomFilter = {
+    const workEventSignature = ethers.id("Work(bytes32,address)");
+    const filter: ethers.Filter = {
         address: jobs,
         topics: [workEventSignature],
-        fromBlock,
-        toBlock: currentBlock,
+        fromBlock: Number(fromBlock),
+        toBlock: Number(currentBlock),
     };
 
     // Fetch all Work events in the last 1000 blocks for all jobs
@@ -189,15 +189,17 @@ export async function processNewBlock(): Promise<void> {
     for (const jobState of jobStates.values()) {
         try {
             const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
-            const [canWork, args] = await jobContract.workable(networkIdentifier);
+            const result = await jobContract.workable(networkIdentifier);
+            const canWork = result[0];
+            const args = result[1];
 
             if (!canWork) {
-                // Job does not need work, so it has been worked recently
+                // Job has been worked recently
                 jobState.lastWorkedBlock = currentBlock;
                 jobState.consecutiveUnworkedBlocks = 0;
             } else {
                 // Job needs work; increment unworked blocks
-                const blocksSinceLastCheck = currentBlock - jobState.lastCheckedBlock;
+                const blocksSinceLastCheck = Number(currentBlock - jobState.lastCheckedBlock);
                 jobState.consecutiveUnworkedBlocks += blocksSinceLastCheck;
             }
 
@@ -205,7 +207,7 @@ export async function processNewBlock(): Promise<void> {
 
             // Check if the job hasn't been worked for 1000 consecutive blocks
             if (jobState.consecutiveUnworkedBlocks >= 1000) {
-                await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
+                await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, Number(currentBlock));
                 // Reset the counter or implement logic to avoid repeated alerts
                 jobState.consecutiveUnworkedBlocks = 0;
             }
