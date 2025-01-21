@@ -61,7 +61,29 @@ export async function sendDiscordAlert(jobAddress: string, unworkedBlocks: numbe
 export const jobStates: Map<string, JobState> = new Map();
 
 // **Add the getActiveJobs function here**
-export async function getActiveJobs(): Promise<string[]> {
+async function getLastWorkedBlock(jobAddress: string, fromBlock: number, toBlock: number): Promise<number | null> {
+    const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
+
+    // Get the event filter for the Work event
+    const workEventFilter = jobContract.filters.Work();
+
+    try {
+        // Fetch the logs for the Work event between fromBlock and toBlock
+        const events = await jobContract.queryFilter(workEventFilter, fromBlock, toBlock);
+
+        if (events.length > 0) {
+            // Return the block number of the most recent Work event
+            const lastEvent = events[events.length - 1];
+            return lastEvent.blockNumber;
+        } else {
+            // No Work events found in the last 1000 blocks
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching Work events for job ${jobAddress}:`, error);
+        return null;
+    }
+}
     const numJobs = await sequencerContract.numJobs();
     const numJobsBN = ethers.BigNumber.from(numJobs);
     const jobs: string[] = [];
@@ -77,12 +99,52 @@ export async function getActiveJobs(): Promise<string[]> {
 
 export async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
+    const fromBlock = Math.max(currentBlock - 1000, 0);
+
+    // Create a filter for all Work events from the jobs
+    const workEventSignature = ethers.utils.id("Work(bytes32,address)");
+    const filter: ethers.providers.Filter = {
+        address: jobs,
+        topics: [workEventSignature],
+        fromBlock,
+        toBlock: currentBlock,
+    };
+
+    // Fetch all Work events in the last 1000 blocks for all jobs
+    let events: ethers.Event[] = [];
+    try {
+        events = await provider.getLogs(filter);
+    } catch (error) {
+        console.error(`Error fetching Work events:`, error);
+    }
+
+    // Map to store the last worked block for each job
+    const lastWorkedBlocks: { [address: string]: number } = {};
+
+    for (const event of events) {
+        const jobAddress = event.address.toLowerCase();
+        if (!lastWorkedBlocks[jobAddress] || event.blockNumber > lastWorkedBlocks[jobAddress]) {
+            lastWorkedBlocks[jobAddress] = event.blockNumber;
+        }
+    }
+
     for (const jobAddress of jobs) {
+        const normalizedAddress = jobAddress.toLowerCase();
+        const lastWorkedBlock = lastWorkedBlocks[normalizedAddress] ?? null;
+
+        let consecutiveUnworkedBlocks: number;
+
+        if (lastWorkedBlock !== null) {
+            consecutiveUnworkedBlocks = currentBlock - lastWorkedBlock;
+        } else {
+            consecutiveUnworkedBlocks = 1000;
+        }
+
         jobStates.set(jobAddress, {
             address: jobAddress,
-            lastWorkedBlock: currentBlock,
+            lastWorkedBlock: lastWorkedBlock ?? fromBlock,
             lastCheckedBlock: currentBlock,
-            consecutiveUnworkedBlocks: 0,
+            consecutiveUnworkedBlocks,
         });
     }
 }
