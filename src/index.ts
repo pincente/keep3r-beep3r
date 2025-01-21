@@ -3,6 +3,10 @@ import * as dotenv from 'dotenv';
 
 import sequencerAbi from './abis/sequencerAbi.json';
 import fetch from 'node-fetch'; // Make sure to import fetch
+
+type CustomFilter = Omit<ethers.providers.Filter, 'address'> & {
+  address?: string | string[];
+};
 import jobAbi from './abis/IJobAbi.json';
 
 // Load environment variables from .env file
@@ -105,7 +109,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.utils.id("Work(bytes32,address)");
-    const filter: ethers.providers.Filter = {
+    const filter: CustomFilter = {
         address: jobs,
         topics: [workEventSignature],
         fromBlock,
