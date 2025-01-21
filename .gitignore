@@ -1,2 +1,17 @@
-.aider*
+# Node modules
+node_modules/
+
+# Compiled output
+dist/
+
+# Environment variables
 .env
+
+# Editor and OS-specific files
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Aider files
+.aider*
