@@ -60,7 +60,7 @@ async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, curr
 const jobStates: Map<string, JobState> = new Map();
 
 // **Add the getActiveJobs function here**
-async function getActiveJobs(): Promise<string[]> {
+export async function getActiveJobs(): Promise<string[]> {
     const numJobs = await sequencerContract.numJobs();
     const numJobsBN = ethers.BigNumber.from(numJobs);
     const jobs: string[] = [];
