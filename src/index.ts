@@ -2,7 +2,6 @@ import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
 
 import sequencerAbi from './abis/sequencerAbi.json';
-import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch'; // Make sure to import fetch
 import jobAbi from './abis/IJobAbi.json';
 
