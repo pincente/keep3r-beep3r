@@ -1,0 +1,21 @@
+{
+  "name": "keep3r-beep3r",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^X.X.X",
+    "ethers": "^X.X.X",
+    "node-fetch": "^2.X.X"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.X.X",
+    "typescript": "^X.X.X"
+  },
+  "author": "",
+  "license": "ISC"
+}
