@@ -20,7 +20,7 @@ if (!ETHEREUM_RPC_URL) {
 }
 
 // Create the Ethereum provider
-const provider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC_URL);
+const provider = new ethers.JsonRpcProvider(ETHEREUM_RPC_URL);
 
 // Define the Sequencer contract address
 const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
@@ -29,8 +29,8 @@ const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, p
 
 export interface JobState {
     address: string;
-    lastWorkedBlock: number;
-    lastCheckedBlock: number;
+    lastWorkedBlock: bigint;
+    lastCheckedBlock: bigint;
     consecutiveUnworkedBlocks: number;
 }
 
@@ -65,11 +65,11 @@ export async function sendDiscordAlert(jobAddress: string, unworkedBlocks: numbe
 export const jobStates: Map<string, JobState> = new Map();
 
 export async function getActiveJobs(): Promise<string[]> {
-    const numJobs = await sequencerContract.numJobs();
-    const numJobsBN = ethers.BigNumber.from(numJobs);
+    const numJobs: bigint = await sequencerContract.numJobs();
+    const numJobsNumber = Number(numJobs);
     const jobs: string[] = [];
 
-    for (let i = 0; i < numJobsBN.toNumber(); i++) {
+    for (let i = 0; i < numJobsNumber; i++) {
         const jobAddress: string = await sequencerContract.jobAt(i);
         jobs.push(jobAddress);
     }
@@ -104,8 +104,8 @@ export async function checkIfJobWasWorked(jobAddress: string, fromBlock: number,
 
 
 export async function initializeJobStates(jobs: string[]): Promise<void> {
-    const currentBlock = await provider.getBlockNumber();
-    const fromBlock = Math.max(currentBlock - 1000, 0);
+    const currentBlock: bigint = await provider.getBlockNumber();
+    const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
     // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.utils.id("Work(bytes32,address)");
@@ -181,8 +181,8 @@ async function main() {
 
 
 export async function processNewBlock(): Promise<void> {
-    const currentBlock = await provider.getBlockNumber();
-    console.log(`Processing block ${currentBlock}`);
+    const currentBlock: bigint = await provider.getBlockNumber();
+    console.log(`Processing block ${currentBlock.toString()}`);
 
     const networkIdentifier = ethers.constants.HashZero; // Use the appropriate network identifier
 
