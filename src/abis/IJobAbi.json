@@ -1,19 +1,23 @@
 [
   {
+    "constant": false,
     "inputs": [{ "name": "network", "type": "bytes32" }],
     "name": "work",
     "outputs": [],
+    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "constant": true,
     "inputs": [{ "name": "network", "type": "bytes32" }],
     "name": "workable",
     "outputs": [
       { "name": "canWork", "type": "bool" },
       { "name": "args", "type": "bytes" }
     ],
-    "stateMutability": "nonpayable",
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   }
 ]
