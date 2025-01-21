@@ -1,0 +1,19 @@
+[
+  {
+    "inputs": [{ "name": "network", "type": "bytes32" }],
+    "name": "work",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "network", "type": "bytes32" }],
+    "name": "workable",
+    "outputs": [
+      { "name": "canWork", "type": "bool" },
+      { "name": "args", "type": "bytes" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

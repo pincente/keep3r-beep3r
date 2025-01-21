@@ -78,12 +78,33 @@ async function main() {
 
 // Run the main function
 main();
-async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<boolean> {
-    // For now, we'll simulate that the job was not worked
-    // In the next steps, we'll implement actual logic to check on-chain data
+import jobAbi from './abis/IJobAbi.json';
 
-    // Placeholder logic: always return false
-    return false;
+async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<boolean> {
+    try {
+        const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
+
+        // Get the transaction filter for the 'work' function
+        const workFunctionFragment = jobContract.interface.getFunction('work');
+        const workFunctionSignature = jobContract.interface.getSighash(workFunctionFragment);
+
+        // Create a filter for transactions to the job address calling 'work'
+        const filter = {
+            fromBlock: fromBlock + 1, // Exclude 'fromBlock' to prevent double counting
+            toBlock: toBlock,
+            to: jobAddress,
+            topics: [workFunctionSignature],
+        };
+
+        // Query the blockchain for matching transactions
+        const logs = await provider.getLogs(filter);
+
+        return logs.length > 0;
+    } catch (error) {
+        console.error(`Error checking if job ${jobAddress} was worked:`, error);
+        return false;
+    }
+}
 }
 
 async function processNewBlock(): Promise<void> {
@@ -98,7 +119,14 @@ async function processNewBlock(): Promise<void> {
             jobState.lastWorkedBlock = currentBlock;
             jobState.consecutiveUnworkedBlocks = 0;
         } else {
-            jobState.consecutiveUnworkedBlocks++;
+            jobState.consecutiveUnworkedBlocks += currentBlock - jobState.lastWorkedBlock;
+        }
+
+        // Check if the job hasn't been worked for 1000 consecutive blocks
+        if (jobState.consecutiveUnworkedBlocks >= 1000) {
+            await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
+            // Reset the counter or implement logic to avoid repeated alerts
+            jobState.consecutiveUnworkedBlocks = 0;
         }
 
         // Log job state (optional)
