@@ -99,25 +99,21 @@ export async function checkIfJobWasWorked(jobAddress: string, fromBlock: number,
 }
 
 
-interface ExtendedFilter extends ethers.providers.Filter {
-    address?: string | string[];
-}
-
 export async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
     const fromBlock = Math.max(currentBlock - 1000, 0);
 
     // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.utils.id("Work(bytes32,address)");
-    const filter: ExtendedFilter = {
-        address: jobs, // Corrected line - string[] is valid here
+    const filter: ethers.providers.Filter = {
+        address: jobs,
         topics: [workEventSignature],
         fromBlock,
         toBlock: currentBlock,
     };
 
     // Fetch all Work events in the last 1000 blocks for all jobs
-    let events: ethers.providers.Log[] = []; // Changed type to Log[]
+    let events: ethers.providers.Log[] = [];
     try {
         events = await provider.getLogs(filter);
     } catch (error) {
