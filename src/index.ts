@@ -25,7 +25,7 @@ const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, p
 
 interface JobState {
     address: string;
-    lastWorkedBlock: number;
+    lastCheckedBlock: number;
     consecutiveUnworkedBlocks: number;
 }
 
@@ -64,7 +64,7 @@ async function initializeJobStates(jobs: string[]): Promise<void> {
     for (const jobAddress of jobs) {
         jobStates.set(jobAddress, {
             address: jobAddress,
-            lastWorkedBlock: currentBlock,
+            lastCheckedBlock: currentBlock,
             consecutiveUnworkedBlocks: 0,
         });
     }
@@ -107,56 +107,43 @@ async function main() {
     }, 15000); // Poll every 15 seconds (adjust as needed)
 }
 
-async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<boolean> {
-    try {
-        const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
-
-        // Get the transaction filter for the 'work' function
-        const workFunctionFragment = jobContract.interface.getFunction('work');
-        const workFunctionSignature = jobContract.interface.getSighash(workFunctionFragment);
-
-        // Create a filter for transactions to the job address calling 'work'
-        const filter = {
-            fromBlock: fromBlock + 1, // Exclude 'fromBlock' to prevent double counting
-            toBlock: toBlock,
-            to: jobAddress,
-            topics: [workFunctionSignature],
-        };
-
-        // Query the blockchain for matching transactions
-        const logs = await provider.getLogs(filter);
-
-        return logs.length > 0;
-    } catch (error) {
-        console.error(`Error checking if job ${jobAddress} was worked:`, error);
-        return false;
-    }
-}
 
 async function processNewBlock(): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
     console.log(`Processing block ${currentBlock}`);
 
+    const networkIdentifier = ethers.constants.HashZero; // Use the appropriate network identifier
+
     for (const jobState of jobStates.values()) {
-        // Placeholder for actual logic to check if the job was worked
-        const jobWasWorked = await checkIfJobWasWorked(jobState.address, jobState.lastWorkedBlock, currentBlock);
+        try {
+            const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
+            const [canWork, args] = await jobContract.workable(networkIdentifier);
 
-        if (jobWasWorked) {
-            jobState.lastWorkedBlock = currentBlock;
-            jobState.consecutiveUnworkedBlocks = 0;
-        } else {
-            jobState.consecutiveUnworkedBlocks += (currentBlock - jobState.lastWorkedBlock);
+            const blocksSinceLastCheck = currentBlock - jobState.lastCheckedBlock;
+
+            if (!canWork) {
+                // Job does not need work, so it has been worked recently
+                jobState.consecutiveUnworkedBlocks = 0;
+            } else {
+                // Job needs work, so increment unworked blocks
+                jobState.consecutiveUnworkedBlocks += blocksSinceLastCheck;
+            }
+
+            jobState.lastCheckedBlock = currentBlock;
+
+            // Check if the job hasn't been worked for 1000 consecutive blocks
+            if (jobState.consecutiveUnworkedBlocks >= 1000) {
+                await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
+                // Reset the counter or implement logic to avoid repeated alerts
+                jobState.consecutiveUnworkedBlocks = 0;
+            }
+
+            // Log job state (optional)
+            console.log(`Job ${jobState.address}:`, jobState);
+
+        } catch (error) {
+            console.error(`Error processing job ${jobState.address}:`, error);
         }
-
-        // Check if the job hasn't been worked for 1000 consecutive blocks
-        if (jobState.consecutiveUnworkedBlocks >= 1000) {
-            await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
-            // Reset the counter or implement logic to avoid repeated alerts
-            jobState.consecutiveUnworkedBlocks = 0;
-        }
-
-        // Log job state (optional)
-        console.log(`Job ${jobState.address}:`, jobState);
     }
 }
 
