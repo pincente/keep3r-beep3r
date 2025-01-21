@@ -70,19 +70,6 @@ async function initializeJobStates(jobs: string[]): Promise<void> {
     }
 }
 
-// Function to fetch active jobs
-async function getActiveJobs(): Promise<string[]> {
-    const numJobs = await sequencerContract.numJobs();
-    const jobs: string[] = [];
-
-    for (let i = 0; i < numJobs.toNumber(); i++) {
-        const jobAddress = await sequencerContract.jobAt(i);
-        jobs.push(jobAddress);
-    }
-
-    return jobs;
-}
-
 async function main() {
     try {
         // Fetch network information
