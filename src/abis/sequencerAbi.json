@@ -1,0 +1,20 @@
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "numJobs",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "name": "_index", "type": "uint256" }],
+    "name": "jobAt",
+    "outputs": [{ "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
