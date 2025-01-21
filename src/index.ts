@@ -126,19 +126,20 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     for (const event of events) { // 'event' is now correctly inferred as ethers.providers.Log
         const jobAddress = event.address.toLowerCase();
-        if (!lastWorkedBlocks[jobAddress] || event.blockNumber > lastWorkedBlocks[jobAddress]) {
-            lastWorkedBlocks[jobAddress] = event.blockNumber;
+        const eventBlockNumber = BigInt(event.blockNumber);
+        if (!lastWorkedBlocks[jobAddress] || eventBlockNumber > lastWorkedBlocks[jobAddress]) {
+            lastWorkedBlocks[jobAddress] = eventBlockNumber;
         }
     }
 
     for (const jobAddress of jobs) {
         const normalizedAddress = jobAddress.toLowerCase();
-        const lastWorkedBlock = lastWorkedBlocks[normalizedAddress] ?? null;
+        const lastWorkedBlock: bigint | null = lastWorkedBlocks[normalizedAddress] ?? null;
 
         let consecutiveUnworkedBlocks: number;
 
         if (lastWorkedBlock !== null) {
-            consecutiveUnworkedBlocks = currentBlock - lastWorkedBlock;
+            consecutiveUnworkedBlocks = Number(currentBlock - lastWorkedBlock);
         } else {
             consecutiveUnworkedBlocks = 1000;
         }

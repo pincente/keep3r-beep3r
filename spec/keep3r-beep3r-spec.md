@@ -283,7 +283,7 @@ async function processNewBlock(): Promise<void> {
   for (const jobState of jobStates.values()) {
     // ... (previous block processing logic)
     if (jobState.consecutiveUnworkedBlocks >= 1000) {
-      await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
+      await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, Number(currentBlock));
       // Optionally, reset the counter or add a flag to avoid repeated alerts
     }
   }
