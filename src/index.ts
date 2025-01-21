@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch'; // Make sure to import fetch
+import jobAbi from './abis/IJobAbi.json';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -116,26 +117,37 @@ async function processNewBlock(): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
     console.log(`Processing block ${currentBlock}`);
 
+    const networkIdentifier = ethers.constants.HashZero; // Use the appropriate network identifier
+
     for (const jobState of jobStates.values()) {
-        // Simplified "worked" check
-        if (currentBlock > jobState.lastWorkedBlock) {
-            // Assume the job was worked
-            jobState.lastWorkedBlock = currentBlock;
-            jobState.consecutiveUnworkedBlocks = 0;
-        } else {
-            // Job was not worked; increment the counter
-            jobState.consecutiveUnworkedBlocks++;
-        }
+        try {
+            const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
+            const [canWork, args] = await jobContract.workable(networkIdentifier);
 
-        // Check if the job hasn't been worked for 1000 consecutive blocks
-        if (jobState.consecutiveUnworkedBlocks >= 1000) {
-            await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
-            // Reset the counter or implement logic to avoid repeated alerts
-            jobState.consecutiveUnworkedBlocks = 0;
-        }
+            if (!canWork) {
+                // Job does not need work, so it has been worked recently
+                jobState.lastWorkedBlock = currentBlock;
+                jobState.consecutiveUnworkedBlocks = 0;
+            } else {
+                // Job needs work; increment unworked blocks
+                const blocksSinceLastCheck = currentBlock - jobState.lastCheckedBlock;
+                jobState.consecutiveUnworkedBlocks += blocksSinceLastCheck;
+            }
 
-        // Log job state (optional)
-        console.log(`Job ${jobState.address}:`, jobState);
+            jobState.lastCheckedBlock = currentBlock;
+
+            // Check if the job hasn't been worked for 1000 consecutive blocks
+            if (jobState.consecutiveUnworkedBlocks >= 1000) {
+                await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, currentBlock);
+                // Reset the counter or implement logic to avoid repeated alerts
+                jobState.consecutiveUnworkedBlocks = 0;
+            }
+
+            // Log job state (optional)
+            console.log(`Job ${jobState.address}:`, jobState);
+        } catch (error) {
+            console.error(`Error processing job ${jobState.address}:`, error);
+        }
     }
 }
 
