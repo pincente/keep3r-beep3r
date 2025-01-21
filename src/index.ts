@@ -1,13 +1,21 @@
 import { ethers } from 'ethers';
-import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 
 // Load environment variables from .env file
 dotenv.config();
 
+// Retrieve the Ethereum RPC URL from environment variables
+const ETHEREUM_RPC_URL = process.env.ETHEREUM_RPC_URL;
+
+if (!ETHEREUM_RPC_URL) {
+  throw new Error("Missing ETHEREUM_RPC_URL in environment variables.");
+}
+
+// Create the Ethereum provider
+const provider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC_URL);
+
 // Define the Sequencer contract address
 const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
-import * as dotenv from 'dotenv';
 
 const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, provider);
 
