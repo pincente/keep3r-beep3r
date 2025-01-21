@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import sequencerAbi from './abis/sequencerAbi.json';
 import * as dotenv from 'dotenv';
 
 // Load environment variables from .env file
