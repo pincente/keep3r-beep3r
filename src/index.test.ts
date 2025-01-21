@@ -1,4 +1,4 @@
-import { getActiveJobs, initializeJobStates, processNewBlock, sendDiscordAlert } from './index';
+import { getActiveJobs, initializeJobStates, processNewBlock, sendDiscordAlert, jobStates, JobState } from './index';
 
 test('getActiveJobs should be a function', () => {
   expect(typeof getActiveJobs).toBe('function');
@@ -17,7 +17,7 @@ test('processNewBlock should update job states', async () => {
   const jobs = ['0x123', '0x456'];
   await initializeJobStates(jobs);
   await processNewBlock();
-  jobStates.forEach(state => {
+  jobStates.forEach((state: JobState) => {
     expect(state.lastCheckedBlock).toBeGreaterThan(0);
   });
 });

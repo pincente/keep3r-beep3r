@@ -23,7 +23,7 @@ const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
 
 const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, provider);
 
-interface JobState {
+export interface JobState {
     address: string;
     lastWorkedBlock: number;
     lastCheckedBlock: number;
@@ -31,7 +31,7 @@ interface JobState {
 }
 
 // Define the sendDiscordAlert function
-async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, currentBlock: number): Promise<void> {
+export async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, currentBlock: number): Promise<void> {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
         console.error("Discord webhook URL not configured.");
@@ -58,7 +58,7 @@ async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, curr
     }
 }
 
-const jobStates: Map<string, JobState> = new Map();
+export const jobStates: Map<string, JobState> = new Map();
 
 // **Add the getActiveJobs function here**
 export async function getActiveJobs(): Promise<string[]> {
@@ -75,7 +75,7 @@ export async function getActiveJobs(): Promise<string[]> {
 }
 
 
-async function initializeJobStates(jobs: string[]): Promise<void> {
+export async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
     for (const jobAddress of jobs) {
         jobStates.set(jobAddress, {
@@ -112,7 +112,7 @@ async function main() {
 }
 
 
-async function processNewBlock(): Promise<void> {
+export async function processNewBlock(): Promise<void> {
     const currentBlock = await provider.getBlockNumber();
     console.log(`Processing block ${currentBlock}`);
 
