@@ -1,4 +1,4 @@
-import { ethers, Filter, Log, EventFragment } from 'ethers';
+import { ethers, Filter, Log } from 'ethers';
 import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
@@ -118,7 +118,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     const jobInterface = new ethers.Interface(jobAbi);
     const workEventFragment = jobInterface.getEvent("Work");
-    const workEventSignature = EventFragment.getTopic(workEventFragment);
+    const workEventSignature = workEventFragment.topicHash;
     const filter: Filter = {
         address: jobs,
         topics: [workEventSignature],
