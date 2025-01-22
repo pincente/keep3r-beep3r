@@ -97,6 +97,11 @@ export async function checkIfJobWasWorked(
 ): Promise<boolean> {
     const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
     const workEventFragment = jobContract.interface.getEvent("Work");
+    if (!workEventFragment) {
+        console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
+        return false;
+    }
+
     const workEventSignature = workEventFragment.topicHash;
     const filter: Filter = {
         address: jobAddress,
