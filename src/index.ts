@@ -166,9 +166,8 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     const networkIdentifier = ethers.ZeroHash;
 
-    for (const jobState of jobStates.values()) {
+    const jobPromises = Array.from(jobStates.values()).map(async (jobState) => {
         try {
-            const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
             const jobContract = jobContracts.get(jobState.address)!;
             const [canWork] = await jobContract.workable(networkIdentifier);
 
@@ -199,7 +198,9 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
         } catch (error) {
             console.error(`Error processing job ${jobState.address} at block ${blockNumber}:`, error);
         }
-    }
+    });
+
+    await Promise.all(jobPromises);
 }
 
 export async function processNewBlocks(): Promise<void> {
