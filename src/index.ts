@@ -116,7 +116,9 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
 
-    const workEventSignature = ethers.id("Work(bytes32,address)");
+    const jobInterface = new ethers.Interface(jobAbi);
+    const workEventFragment = jobInterface.getEvent("Work");
+    const workEventSignature = jobInterface.getEventTopic(workEventFragment);
     const filter: Filter = {
         address: jobs,
         topics: [workEventSignature],
@@ -177,11 +179,11 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             const jobContract = jobContracts.get(jobState.address)!;
             const [canWork] = await jobContract.workable(networkIdentifier);
 
-            if (!canWork) {
+            if (canWork) {
+                jobState.consecutiveUnworkedBlocks += BigInt(1);
+            } else {
                 jobState.lastWorkedBlock = blockNumber;
                 jobState.consecutiveUnworkedBlocks = BigInt(0);
-            } else {
-                jobState.consecutiveUnworkedBlocks = jobState.consecutiveUnworkedBlocks + BigInt(1);
             }
 
             jobState.lastCheckedBlock = blockNumber;
