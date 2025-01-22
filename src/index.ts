@@ -1,46 +1,55 @@
 import { ethers, Filter, Log } from 'ethers';
 import * as dotenv from 'dotenv';
-
 import sequencerAbi from './abis/sequencerAbi.json';
-import fetch from 'node-fetch'; // Make sure to import fetch
-
 import jobAbi from './abis/IJobAbi.json';
+import fetch from 'node-fetch';
 
 // Load environment variables from .env file
 dotenv.config();
 
-// Retrieve the Ethereum RPC URL from environment variables
-const ETHEREUM_RPC_URL = process.env.ETHEREUM_RPC_URL;
-
-if (!ETHEREUM_RPC_URL) {
-  throw new Error("Missing ETHEREUM_RPC_URL in environment variables.");
+// Validate required environment variables
+const requiredEnvVars = ['ETHEREUM_RPC_URL', 'DISCORD_WEBHOOK_URL'] as const;
+for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+        throw new Error(`Missing ${envVar} in environment variables.`);
+    }
 }
 
 // Create the Ethereum provider
-const provider = new ethers.JsonRpcProvider(ETHEREUM_RPC_URL);
+const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
 
 // Define the Sequencer contract address
 const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
-
 const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, provider);
+
+// Constants
+const BLOCK_CHECK_INTERVAL = 15000; // 15 seconds
+const UNWORKED_BLOCKS_THRESHOLD = BigInt(1000);
+const MAX_JOB_AGE = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 export interface JobState {
     address: string;
     lastWorkedBlock: bigint;
     lastCheckedBlock: bigint;
-    consecutiveUnworkedBlocks: number;
+    consecutiveUnworkedBlocks: bigint;
+    lastUpdateTime: number; // Timestamp for cleanup purposes
 }
 
-// Define the sendDiscordAlert function
-export async function sendDiscordAlert(jobAddress: string, unworkedBlocks: number, currentBlock: number): Promise<void> {
+export const jobStates: Map<string, JobState> = new Map();
+let lastProcessedBlock: bigint;
+
+export async function sendDiscordAlert(
+    jobAddress: string, 
+    unworkedBlocks: bigint, 
+    currentBlock: bigint
+): Promise<void> {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
-        console.error("Discord webhook URL not configured.");
-        return;
+        throw new Error("Discord webhook URL not configured.");
     }
 
     const message = {
-        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks} blocks (current block: ${currentBlock}).`
+        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`
     };
 
     try {
@@ -49,62 +58,60 @@ export async function sendDiscordAlert(jobAddress: string, unworkedBlocks: numbe
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(message),
         });
+
         if (!response.ok) {
-            console.error(`Failed to send Discord alert. Status: ${response.status}`);
-        } else {
-            console.log(`Alert sent to Discord for job ${jobAddress}.`);
+            throw new Error(`Failed to send Discord alert. Status: ${response.status}`);
         }
+        
+        console.log(`Alert sent to Discord for job ${jobAddress}.`);
     } catch (error) {
         console.error("Error sending Discord alert:", error);
+        throw error;
     }
 }
-
-export const jobStates: Map<string, JobState> = new Map();
 
 export async function getActiveJobs(): Promise<string[]> {
-    const numJobs: bigint = await sequencerContract.numJobs();
-    const numJobsNumber = Number(numJobs);
-    const jobs: string[] = [];
+    try {
+        const numJobs: bigint = await sequencerContract.numJobs();
+        const jobs: string[] = [];
 
-    for (let i = 0; i < numJobsNumber; i++) {
-        const jobAddress: string = await sequencerContract.jobAt(i);
-        jobs.push(jobAddress);
+        for (let i = BigInt(0); i < numJobs; i = i + BigInt(1)) {
+            const jobAddress: string = await sequencerContract.jobAt(i);
+            jobs.push(jobAddress);
+        }
+
+        return jobs;
+    } catch (error) {
+        console.error("Error fetching active jobs:", error);
+        throw error;
     }
-
-    return jobs;
 }
 
-
-export async function checkIfJobWasWorked(jobAddress: string, fromBlock: number, toBlock: number): Promise<number | null> { // Changed return type to number | null
+export async function checkIfJobWasWorked(
+    jobAddress: string, 
+    fromBlock: bigint, 
+    toBlock: bigint
+): Promise<bigint | null> {
     const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
-
-    // Get the event filter for the Work event
     const workEventFilter = jobContract.filters.Work();
 
     try {
-        // Fetch the logs for the Work event between fromBlock and toBlock
-        const events = await jobContract.queryFilter(workEventFilter, fromBlock, toBlock);
-
-        if (events.length > 0) {
-            // Return the block number of the most recent Work event
-            const lastEvent = events[events.length - 1];
-            return lastEvent.blockNumber;
-        } else {
-            // No Work events found in the specified block range
-            return null;
-        }
+        const events = await jobContract.queryFilter(
+            workEventFilter, 
+            Number(fromBlock), 
+            Number(toBlock)
+        );
+        return events.length > 0 ? BigInt(events[events.length - 1].blockNumber) : null;
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
         return null;
     }
 }
 
-
 export async function initializeJobStates(jobs: string[]): Promise<void> {
-    const currentBlock: bigint = await provider.getBlockNumber();
+    const currentBlock = BigInt(await provider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
-    // Create a filter for all Work events from the jobs
     const workEventSignature = ethers.id("Work(bytes32,address)");
     const filter: Filter = {
         address: jobs,
@@ -113,110 +120,146 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         toBlock: Number(currentBlock),
     };
 
-    // Fetch all Work events in the last 1000 blocks for all jobs
-    let events: Log[] = [];
     try {
-        events = await provider.getLogs(filter);
+        const events = await provider.getLogs(filter);
+        const lastWorkedBlocks = new Map<string, bigint>();
+
+        for (const event of events) {
+            const jobAddress = event.address.toLowerCase();
+            const eventBlockNumber = BigInt(event.blockNumber);
+            
+            if (!lastWorkedBlocks.has(jobAddress) || eventBlockNumber > lastWorkedBlocks.get(jobAddress)!) {
+                lastWorkedBlocks.set(jobAddress, eventBlockNumber);
+            }
+        }
+
+        for (const jobAddress of jobs) {
+            const normalizedAddress = jobAddress.toLowerCase();
+            const lastWorkedBlock = lastWorkedBlocks.get(normalizedAddress);
+            const consecutiveUnworkedBlocks = lastWorkedBlock 
+                ? currentBlock - lastWorkedBlock 
+                : BigInt(0);
+
+            jobStates.set(jobAddress, {
+                address: jobAddress,
+                lastWorkedBlock: lastWorkedBlock ?? fromBlock,
+                lastCheckedBlock: currentBlock,
+                consecutiveUnworkedBlocks,
+                lastUpdateTime: Date.now()
+            });
+        }
     } catch (error) {
-        console.error(`Error fetching Work events:`, error);
+        console.error("Error initializing job states:", error);
+        throw error;
     }
+}
 
-    // Map to store the last worked block for each job
-    const lastWorkedBlocks: { [address: string]: bigint } = {};
+export async function processBlockNumber(blockNumber: bigint): Promise<void> {
+    const networkIdentifier = ethers.ZeroHash;
 
-    for (const event of events) { // 'event' is now correctly inferred as ethers.providers.Log
-        const jobAddress = event.address.toLowerCase();
-        const eventBlockNumber = BigInt(event.blockNumber);
-        if (!lastWorkedBlocks[jobAddress] || eventBlockNumber > lastWorkedBlocks[jobAddress]) {
-            lastWorkedBlocks[jobAddress] = eventBlockNumber;
+    for (const jobState of jobStates.values()) {
+        try {
+            const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
+            const [canWork] = await jobContract.workable(networkIdentifier);
+
+            if (!canWork) {
+                jobState.lastWorkedBlock = blockNumber;
+                jobState.consecutiveUnworkedBlocks = BigInt(0);
+            } else {
+                jobState.consecutiveUnworkedBlocks = jobState.consecutiveUnworkedBlocks + BigInt(1);
+            }
+
+            jobState.lastCheckedBlock = blockNumber;
+            jobState.lastUpdateTime = Date.now();
+
+            if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
+                await sendDiscordAlert(
+                    jobState.address, 
+                    jobState.consecutiveUnworkedBlocks,
+                    blockNumber
+                );
+                jobState.consecutiveUnworkedBlocks = BigInt(0);
+            }
+
+            console.log(`Job ${jobState.address} state updated:`, {
+                lastWorkedBlock: jobState.lastWorkedBlock.toString(),
+                consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(),
+                lastCheckedBlock: jobState.lastCheckedBlock.toString()
+            });
+        } catch (error) {
+            console.error(`Error processing job ${jobState.address} at block ${blockNumber}:`, error);
         }
     }
+}
 
-    for (const jobAddress of jobs) {
-        const normalizedAddress = jobAddress.toLowerCase();
-        const lastWorkedBlock: bigint | null = lastWorkedBlocks[normalizedAddress] ?? null;
-
-        let consecutiveUnworkedBlocks: number;
-
-        if (lastWorkedBlock !== null) {
-            consecutiveUnworkedBlocks = Number(currentBlock - lastWorkedBlock);
-        } else {
-            consecutiveUnworkedBlocks = 1000;
+export async function processNewBlocks(): Promise<void> {
+    try {
+        const currentBlock = BigInt(await provider.getBlockNumber());
+        
+        if (!lastProcessedBlock) {
+            lastProcessedBlock = currentBlock - BigInt(1);
         }
 
-        jobStates.set(jobAddress, {
-            address: jobAddress,
-            lastWorkedBlock: lastWorkedBlock ?? fromBlock,
-            lastCheckedBlock: currentBlock,
-            consecutiveUnworkedBlocks,
-        });
+        for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(1)) {
+            await processBlockNumber(block);
+        }
+
+        lastProcessedBlock = currentBlock;
+    } catch (error) {
+        console.error("Error processing new blocks:", error);
+    }
+}
+
+function cleanupInactiveJobs(): void {
+    const currentTime = Date.now();
+    
+    for (const [address, state] of jobStates.entries()) {
+        if (currentTime - state.lastUpdateTime > MAX_JOB_AGE) {
+            console.log(`Removing inactive job: ${address}`);
+            jobStates.delete(address);
+        }
     }
 }
 
 async function main() {
     try {
-        // Fetch network information
         const network = await provider.getNetwork();
         console.log(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
-
-        // Fetch the current block number
+        
         const blockNumber = await provider.getBlockNumber();
         console.log(`Current block number: ${blockNumber}`);
-        // Fetch and display active jobs from the Sequencer contract
+
         const activeJobs = await getActiveJobs();
         console.log('Active Jobs:', activeJobs);
-        // Initialize job states
+        
         await initializeJobStates(activeJobs);
-        console.log('Initialized Job States:', Array.from(jobStates.values()));
+        console.log('Job states initialized:', Array.from(jobStates.values()));
+
+        setInterval(async () => {
+            await processNewBlocks();
+        }, BLOCK_CHECK_INTERVAL);
+
+        setInterval(() => {
+            cleanupInactiveJobs();
+        }, BLOCK_CHECK_INTERVAL * 4);
+
     } catch (error) {
-        console.error("Error connecting to Ethereum network:", error);
-    }
-    // Start processing new blocks at intervals
-    setInterval(async () => {
-        await processNewBlock();
-    }, 15000); // Poll every 15 seconds (adjust as needed)
-}
-
-
-export async function processNewBlock(): Promise<void> {
-    const currentBlock: bigint = await provider.getBlockNumber();
-    console.log(`Processing block ${currentBlock.toString()}`);
-
-    const networkIdentifier = ethers.ZeroHash; // Use the appropriate network identifier
-
-    for (const jobState of jobStates.values()) {
-        try {
-            const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
-            const result = await jobContract.workable(networkIdentifier);
-            const canWork = result[0];
-            const args = result[1];
-
-            if (!canWork) {
-                // Job has been worked recently
-                jobState.lastWorkedBlock = currentBlock;
-                jobState.consecutiveUnworkedBlocks = 0;
-            } else {
-                // Job needs work; increment unworked blocks
-                const blocksSinceLastCheck = Number(currentBlock - jobState.lastCheckedBlock);
-                jobState.consecutiveUnworkedBlocks += blocksSinceLastCheck;
-            }
-
-            jobState.lastCheckedBlock = currentBlock;
-
-            // Check if the job hasn't been worked for 1000 consecutive blocks
-            if (jobState.consecutiveUnworkedBlocks >= 1000) {
-                await sendDiscordAlert(jobState.address, jobState.consecutiveUnworkedBlocks, Number(currentBlock));
-                // Reset the counter or implement logic to avoid repeated alerts
-                jobState.consecutiveUnworkedBlocks = 0;
-            }
-
-            // Log job state (optional)
-            console.log(`Job ${jobState.address}:`, jobState);
-        } catch (error) {
-            console.error(`Error processing job ${jobState.address}:`, error);
-        }
+        console.error("Error in main process:", error);
+        process.exit(1);
     }
 }
 
-// Run the main function
-main();
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM. Cleaning up...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('Received SIGINT. Cleaning up...');
+    process.exit(0);
+});
+
+main().catch((error) => {
+    console.error("Fatal error:", error);
+    process.exit(1);
+});
