@@ -176,19 +176,26 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 }
 
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
-    const networkIdentifier = ethers.ZeroHash;
+    // Get the networkIdentifier from the Sequencer contract
+    const networkIdentifier: string = await sequencerContract.getMaster();
 
     const jobPromises = Array.from(jobStates.values()).map(async (jobState) => {
         try {
             const jobContract = jobContracts.get(jobState.address)!;
             const result = await jobContract.workable(networkIdentifier);
-            const canWork = result.canWork; // Access 'canWork' property
+            const canWork: boolean = result[0]; // Access the first element (boolean)
+            const args: string = result[1];    // Access the second element (bytes)
 
-            console.log(`workable() result for job ${jobState.address}:`, result);
+            console.log(`workable() result for job ${jobState.address}:`, {
+                canWork: canWork,
+                args: args
+            });
 
             if (canWork) {
+                // Job needs work; increment unworked blocks
                 jobState.consecutiveUnworkedBlocks += BigInt(1);
             } else {
+                // Job was worked recently
                 jobState.lastWorkedBlock = blockNumber;
                 jobState.consecutiveUnworkedBlocks = BigInt(0);
             }
@@ -198,10 +205,11 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 
             if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
                 await sendDiscordAlert(
-                    jobState.address, 
+                    jobState.address,
                     jobState.consecutiveUnworkedBlocks,
                     blockNumber
                 );
+                // Reset counter after alert to avoid repeated alerts
                 jobState.consecutiveUnworkedBlocks = BigInt(0);
             }
 
