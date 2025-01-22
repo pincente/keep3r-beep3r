@@ -178,6 +178,12 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     // Get the networkIdentifier from the Sequencer contract
     const networkIdentifier: string = await sequencerContract.getMaster();
+    console.log(`networkIdentifier: ${networkIdentifier}`);
+
+    if (networkIdentifier === ethers.ZeroHash) {
+        console.warn(`No active master network at block ${blockNumber}. Skipping job processing.`);
+        return;
+    }
 
     const jobPromises = Array.from(jobStates.values()).map(async (jobState) => {
         try {
