@@ -143,9 +143,15 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             jobContracts.set(jobAddress, jobContract);
             const normalizedAddress = jobAddress.toLowerCase();
             const lastWorkedBlock = lastWorkedBlocks.get(normalizedAddress);
-            const consecutiveUnworkedBlocks = lastWorkedBlock 
-                ? currentBlock - lastWorkedBlock 
-                : BigInt(0);
+            let consecutiveUnworkedBlocks: bigint;
+
+            if (lastWorkedBlock) {
+                // Job was worked within the last 1000 blocks
+                consecutiveUnworkedBlocks = currentBlock - lastWorkedBlock;
+            } else {
+                // Job has not been worked in the last 1000 blocks (or possibly ever)
+                consecutiveUnworkedBlocks = currentBlock - fromBlock;
+            }
 
             jobStates.set(jobAddress, {
                 address: jobAddress,
