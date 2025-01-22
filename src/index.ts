@@ -52,7 +52,7 @@ export async function sendDiscordAlert(
         content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`
     };
 
-    console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
+    try {
         const response = await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -62,9 +62,8 @@ export async function sendDiscordAlert(
         if (!response.ok) {
             throw new Error(`Failed to send Discord alert. Status: ${response.status}`);
         }
-        
+
         console.log(`Alert sent to Discord for job ${jobAddress}.`);
-        console.log(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
     } catch (error) {
         console.error("Error sending Discord alert:", error);
         throw error;
@@ -114,6 +113,8 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = BigInt(await provider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
+    console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
+
     const workEventSignature = ethers.id("Work(bytes32,address)");
     const filter: Filter = {
         address: jobs,
@@ -151,6 +152,8 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
                 lastUpdateTime: Date.now()
             });
         }
+
+        console.log(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
     } catch (error) {
         console.error("Error initializing job states:", error);
         throw error;
