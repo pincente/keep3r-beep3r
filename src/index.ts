@@ -181,7 +181,10 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     const jobPromises = Array.from(jobStates.values()).map(async (jobState) => {
         try {
             const jobContract = jobContracts.get(jobState.address)!;
-            const [canWork] = await jobContract.workable(networkIdentifier);
+            const result = await jobContract.workable(networkIdentifier);
+            const canWork = result.canWork; // Access 'canWork' property
+
+            console.log(`workable() result for job ${jobState.address}:`, result);
 
             if (canWork) {
                 jobState.consecutiveUnworkedBlocks += BigInt(1);
