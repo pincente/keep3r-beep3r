@@ -60,8 +60,10 @@ export async function sendDiscordAlert(
             body: JSON.stringify(message),
         });
 
+        const responseBody = await response.text();
+
         if (!response.ok) {
-            throw new Error(`Failed to send Discord alert. Status: ${response.status}`);
+            throw new Error(`Failed to send Discord alert. Status: ${response.status}, Body: ${responseBody}`);
         }
 
         console.log(`Alert sent to Discord for job ${jobAddress}.`);
@@ -89,19 +91,22 @@ export async function getActiveJobs(): Promise<string[]> {
 }
 
 export async function checkIfJobWasWorked(
-    jobAddress: string, 
-    fromBlock: bigint, 
+    jobAddress: string,
+    fromBlock: bigint,
     toBlock: bigint
 ): Promise<boolean> {
     const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
-    const workEventFilter = jobContract.filters.Work();
+    const workEventFragment = jobContract.interface.getEvent("Work");
+    const workEventSignature = jobContract.interface.getEventTopic(workEventFragment);
+    const filter: Filter = {
+        address: jobAddress,
+        topics: [workEventSignature],
+        fromBlock: Number(fromBlock),
+        toBlock: Number(toBlock)
+    };
 
     try {
-        const events = await jobContract.queryFilter(
-            workEventFilter, 
-            Number(fromBlock), 
-            Number(toBlock)
-        );
+        const events = await provider.getLogs(filter);
         return events.length > 0;
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
