@@ -123,6 +123,14 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     const jobInterface = new ethers.Interface(jobAbi);
     const workEventFragment = jobInterface.getEvent("Work");
+    const workEventSignature = jobInterface.getEventTopic(workEventFragment);
+    const filter: Filter = {
+        address: jobs,
+        topics: [workEventSignature],
+        fromBlock: Number(fromBlock),
+        toBlock: Number(currentBlock),
+    };
+    const workEventFragment = jobInterface.getEvent("Work");
     if (!workEventFragment) {
         throw new Error("Event 'Work' not found in job interface.");
     }
