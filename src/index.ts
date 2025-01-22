@@ -23,9 +23,9 @@ const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
 const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, provider);
 
 // Constants
-const BLOCK_CHECK_INTERVAL = 15000; // 15 seconds
-const UNWORKED_BLOCKS_THRESHOLD = BigInt(1000);
-const MAX_JOB_AGE = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const BLOCK_CHECK_INTERVAL = parseInt(process.env.BLOCK_CHECK_INTERVAL || '15000');
+const UNWORKED_BLOCKS_THRESHOLD = BigInt(process.env.UNWORKED_BLOCKS_THRESHOLD || '1000');
+const MAX_JOB_AGE = parseInt(process.env.MAX_JOB_AGE || '86400000'); // 24 hours in ms
 
 export interface JobState {
     address: string;
@@ -36,6 +36,7 @@ export interface JobState {
 }
 
 export const jobStates: Map<string, JobState> = new Map();
+const jobContracts: Map<string, ethers.Contract> = new Map();
 let lastProcessedBlock: bigint;
 
 export async function sendDiscordAlert(
@@ -138,6 +139,8 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         }
 
         for (const jobAddress of jobs) {
+            const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
+            jobContracts.set(jobAddress, jobContract);
             const normalizedAddress = jobAddress.toLowerCase();
             const lastWorkedBlock = lastWorkedBlocks.get(normalizedAddress);
             const consecutiveUnworkedBlocks = lastWorkedBlock 
@@ -166,6 +169,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     for (const jobState of jobStates.values()) {
         try {
             const jobContract = new ethers.Contract(jobState.address, jobAbi, provider);
+            const jobContract = jobContracts.get(jobState.address)!;
             const [canWork] = await jobContract.workable(networkIdentifier);
 
             if (!canWork) {
