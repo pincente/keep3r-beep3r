@@ -92,7 +92,7 @@ export async function checkIfJobWasWorked(
     jobAddress: string, 
     fromBlock: bigint, 
     toBlock: bigint
-): Promise<bigint | null> {
+): Promise<boolean> {
     const jobContract = new ethers.Contract(jobAddress, jobAbi, provider);
     const workEventFilter = jobContract.filters.Work();
 
@@ -102,7 +102,7 @@ export async function checkIfJobWasWorked(
             Number(fromBlock), 
             Number(toBlock)
         );
-        return events.length > 0 ? BigInt(events[events.length - 1].blockNumber) : null;
+        return events.length > 0;
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
         return null;
@@ -197,16 +197,30 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
                 args: args
             });
 
+            const previousCheckedBlock = jobState.lastCheckedBlock;
+            jobState.lastCheckedBlock = blockNumber;
+
             if (canWork) {
                 // Job needs work; increment unworked blocks
                 jobState.consecutiveUnworkedBlocks += BigInt(1);
             } else {
-                // Job was worked recently
-                jobState.lastWorkedBlock = blockNumber;
-                jobState.consecutiveUnworkedBlocks = BigInt(0);
+                // Job cannot be worked; check if it was worked recently
+                const wasWorked = await checkIfJobWasWorked(
+                    jobState.address,
+                    previousCheckedBlock + BigInt(1),
+                    blockNumber
+                );
+
+                if (wasWorked) {
+                    // Job was worked recently
+                    jobState.lastWorkedBlock = blockNumber;
+                    jobState.consecutiveUnworkedBlocks = BigInt(0);
+                } else {
+                    // Job was not worked; increment unworked blocks
+                    jobState.consecutiveUnworkedBlocks += blockNumber - previousCheckedBlock;
+                }
             }
 
-            jobState.lastCheckedBlock = blockNumber;
             jobState.lastUpdateTime = Date.now();
 
             if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
