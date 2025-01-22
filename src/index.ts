@@ -105,7 +105,7 @@ export async function checkIfJobWasWorked(
         return events.length > 0;
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
-        return null;
+        return false;
     }
 }
 
