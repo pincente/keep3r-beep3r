@@ -370,6 +370,34 @@ async function processNewBlock(): Promise<void> {
 
 ---
 
+## Alert Suppression Feature
+
+The `keep3r-beep3r` application now includes a feature to suppress Discord alerts based on the reason provided by the `workable()` function of the monitored jobs.
+
+**Ignored Reasons:**
+
+By default, alerts are suppressed if the `workable()` function returns `false` and provides one of the following reasons in the `args` field:
+
+- `No ilks ready`
+- `Flap not possible`
+- `No distribution`
+- `No work to do`
+
+These reasons are considered normal operational states for the monitored MakerDAO automation jobs and do not typically require immediate action. Suppressing alerts for these reasons helps to reduce noise and focus on potentially more critical issues.
+
+**Customization:**
+
+The list of ignored reasons can be customized by modifying the `IGNORED_ARGS_MESSAGES` array in the `src/index.ts` file.  You can add or remove reasons from this array to tailor the alert suppression behavior to your specific needs.
+
+**How it Works:**
+
+In the `processBlockNumber` function, before sending a Discord alert, the application checks if the `argsString` (the decoded reason from `workable()`) is included in the `IGNORED_ARGS_MESSAGES` array.
+
+- If the `argsString` is in the ignore list, the alert is suppressed, and a `[Alert suppressed]` message is logged to the console.
+- If the `argsString` is not in the ignore list (or if there is no `argsString`), a Discord alert is sent as usual.
+
+This feature allows for more intelligent alerting, ensuring that you are only notified of job issues that are likely to be actionable, rather than normal waiting states.
+
 ## Future Steps (Beyond Core Requirements)
 - Implement more sophisticated chain reorg handling.
 - Add more comprehensive monitoring and metrics.
