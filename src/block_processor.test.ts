@@ -1,24 +1,11 @@
 import { processNewBlocks, processBlockNumber } from './block_processor';
 
-// Define a custom type for mock contract methods
-type MockContractMethod = jest.Mock & ethers.ContractMethod & {
-    fragment: { name: string };
-};
 import { initializeJobStates, jobStates, JobState, checkIfJobWasWorked, jobContracts } from './job_manager';
 import { sequencerContract, multicallProvider, jobInterface } from './ethereum';
 import { sendDiscordAlert } from './alerting';
 import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, UNWORKED_BLOCKS_THRESHOLD, MAX_JOB_AGE, IGNORED_ARGS_MESSAGES } from './config';
 import { ethers, FunctionFragment } from 'ethers';
 
-// Helper function to create mock contract methods
-const createMockContractMethod = (
-    mockImplementation: (...args: any[]) => any,
-    methodName: string
-): MockContractMethod => {
-    const mockFn = jest.fn().mockImplementation(mockImplementation) as unknown as MockContractMethod;
-    mockFn.fragment = FunctionFragment.from(`${methodName}()`);
-    return mockFn;
-};
 
 
 // Mock modules and functions
@@ -71,8 +58,9 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            const mockContract = new ethers.Contract(jobAddress, [], multicallProvider) as jest.Mocked<ethers.Contract>;
-            mockContract.workable = createMockContractMethod(() => Promise.resolve([false, '0x']), 'workable');
+            const mockContract = {
+                workable: jest.fn().mockResolvedValue([false, '0x']),
+            } as unknown as ethers.Contract;
             jobContracts.set(jobAddress, mockContract);
         }
         // Mock getMaster, getBlockNumber already in module mock
@@ -81,9 +69,9 @@ describe('block_processor', () => {
 
     describe('processBlockNumber', () => {
         it('should call workable for each job and update job state when workable is false and job was not worked', async () => {
-            (jobContracts.get(jobs[0])!.workable as unknown as MockContractMethod).mockResolvedValue([false, '0x']); // workable returns false for job1
-            (jobContracts.get(jobs[1])!.workable as unknown as MockContractMethod).mockResolvedValue([true, '0x']);  // workable returns true for job2
-            (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false); // No Work event
+            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, '0x']); // workable returns false for job1
+            jobContracts.get(jobs[1])!.workable.mockResolvedValue([true, '0x']);  // workable returns true for job2
+            checkIfJobWasWorked.mockResolvedValue(false); // No Work event
 
             await processBlockNumber(BigInt(21684851));
 
@@ -99,8 +87,8 @@ describe('block_processor', () => {
 
         it('should call sendDiscordAlert when consecutiveUnworkedBlocks exceeds threshold and reason is not ignored', async () => {
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD; // Set consecutiveUnworkedBlocks to threshold
-            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, ethers.toUtf8Bytes('SomeReason')]); // workable returns false with reason
-            (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false);
+            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.toUtf8Bytes('SomeReason')]); // workable returns false with reason
+            checkIfJobWasWorked.mockResolvedValue(false);
 
             await processBlockNumber(BigInt(21684852));
 
@@ -111,8 +99,8 @@ describe('block_processor', () => {
 
         it('should suppress Discord alert when reason is in IGNORED_ARGS_MESSAGES', async () => {
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD;
-            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, ethers.toUtf8Bytes('No ilks ready')]); // Reason is ignored
-            (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false);
+            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.toUtf8Bytes('No ilks ready')]); // Reason is ignored
+            checkIfJobWasWorked.mockResolvedValue(false);
 
             await processBlockNumber(BigInt(21684853));
 
@@ -121,8 +109,8 @@ describe('block_processor', () => {
         });
 
         it('should reset consecutiveUnworkedBlocks to 0 if job was worked', async () => {
-            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, '0x']); // Not workable
-            (checkIfJobWasWorked as jest.Mock).mockResolvedValue(true); // Job was worked
+            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, '0x']); // Not workable
+            checkIfJobWasWorked.mockResolvedValue(true); // Job was worked
 
             await processBlockNumber(BigInt(21684854));
 
@@ -131,8 +119,8 @@ describe('block_processor', () => {
         });
 
         it('should handle non-utf8 args gracefully', async () => {
-            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, ethers.getBytes(Uint8Array.from([0x80]))]); // Invalid UTF-8 byte
-            (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false);
+            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.getBytes(Uint8Array.from([0x80]))]); // Invalid UTF-8 byte
+            checkIfJobWasWorked.mockResolvedValue(false);
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD;
 
 

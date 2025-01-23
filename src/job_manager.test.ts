@@ -1,22 +1,9 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
 
-// Define a custom type for mock contract methods
-type MockContractMethod = jest.Mock & ethers.ContractMethod & {
-    fragment: { name: string };
-};
 import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers, FunctionFragment } from 'ethers';
 
 
-// Helper function to create mock contract methods
-const createMockContractMethod = (
-    mockImplementation: (...args: any[]) => any,
-    methodName: string
-): MockContractMethod => {
-    const mockFn = jest.fn().mockImplementation(mockImplementation) as unknown as MockContractMethod;
-    mockFn.fragment = FunctionFragment.from(`${methodName}()`);
-    return mockFn;
-};
 
 
 // Mock sequencerContract and provider for testing
@@ -73,7 +60,7 @@ describe('job_manager', () => {
 
     describe('checkIfJobWasWorked', () => {
         it('should return true if Work events are found', async () => {
-            (multicallProvider.provider.getLogs as jest.Mock).mockResolvedValueOnce(['event1', 'event2']); // Mock with some events
+            multicallProvider.provider.getLogs.mockResolvedValueOnce(['event1', 'event2']); // Mock with some events
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
@@ -85,7 +72,7 @@ describe('job_manager', () => {
         });
 
         it('should return false if no Work events are found', async () => {
-            (multicallProvider.provider.getLogs as jest.Mock).mockResolvedValueOnce([]); // Mock with no events
+            multicallProvider.provider.getLogs.mockResolvedValueOnce([]); // Mock with no events
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
@@ -98,7 +85,7 @@ describe('job_manager', () => {
         });
 
         it('should handle errors when fetching Work events', async () => {
-            (multicallProvider.provider.getLogs as jest.Mock).mockRejectedValueOnce(new Error('RPC Error'));
+            multicallProvider.provider.getLogs.mockRejectedValueOnce(new Error('RPC Error'));
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
