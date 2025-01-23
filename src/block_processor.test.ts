@@ -7,10 +7,7 @@ import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATC
 import { ethers } from 'ethers';
 import * as jobManager from './job_manager';
 
-interface MockJobContract {
-  workable: jest.MockedFunction<() => Promise<[boolean, string]>>;
-  // Add other methods if needed
-}
+type MockJobContract = jest.Mocked<ethers.Contract>;
 
 
 
@@ -62,9 +59,8 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            const mockContract: MockJobContract = {
-                workable: jest.fn().mockResolvedValue([false, '0x']),
-            } as unknown as ethers.Contract;
+            const mockContract = new ethers.Contract(jobAddress, [], multicallProvider) as jest.Mocked<ethers.Contract>;
+            mockContract.workable.mockResolvedValue([false, '0x']);
             jobContracts.set(jobAddress, mockContract);
         }
         // Mock getMaster, getBlockNumber already in module mock
@@ -75,7 +71,7 @@ describe('block_processor', () => {
         it('should call workable for each job and update job state when workable is false and job was not worked', async () => {
             jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, '0x']); // workable returns false for job1
             jobContracts.get(jobs[1])!.workable.mockResolvedValue([true, '0x']);  // workable returns true for job2
-            const checkIfJobWasWorkedMock = jobManager.checkIfJobWasWorked as jest.Mock;
+            const checkIfJobWasWorkedMock = jobManager.checkIfJobWasWorked as jest.MockedFunction<typeof jobManager.checkIfJobWasWorked>;
             checkIfJobWasWorkedMock.mockResolvedValue(false); // No Work event
 
             await processBlockNumber(BigInt(21684851));

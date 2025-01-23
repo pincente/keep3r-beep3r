@@ -2,20 +2,11 @@ import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasW
 
 import { sequencerContract } from './ethereum';
 
-const sequencerContractMock = sequencerContract as unknown as {
-  numJobs: jest.MockedFunction<() => Promise<bigint>>;
-  jobAt: jest.MockedFunction<(index: bigint) => Promise<string>>;
-  // Add other methods if needed
-};
+const sequencerContractMock = sequencerContract as jest.Mocked<typeof sequencerContract>;
 
 import { multicallProvider } from './ethereum';
 
-const multicallProviderMock = multicallProvider as unknown as {
-  provider: {
-    getLogs: jest.MockedFunction<(_filter: any) => Promise<any[]>>;
-  };
-  getBlockNumber: jest.MockedFunction<() => Promise<number>>;
-};
+const multicallProviderMock = multicallProvider as jest.Mocked<typeof multicallProvider>;
 import { ethers } from 'ethers';
 
 
@@ -46,8 +37,9 @@ describe('job_manager', () => {
 
     test('getActiveJobs should return an array of job addresses', async () => {
         sequencerContractMock.numJobs.mockResolvedValue(BigInt(2));
-        sequencerContractMock.jobAt.mockResolvedValueOnce('0xJobAddress1');
-        sequencerContractMock.jobAt.mockResolvedValueOnce('0xJobAddress2');
+        sequencerContractMock.jobAt
+            .mockResolvedValueOnce('0xJobAddress1')
+            .mockResolvedValueOnce('0xJobAddress2');
 
         const jobs = await getActiveJobs();
         expect(jobs).toEqual(['0xJobAddress1', '0xJobAddress2']);
