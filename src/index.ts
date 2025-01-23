@@ -263,7 +263,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
                 // Check if argsString is in the ignore list
                 if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
-                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log
+                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log - ADDED JOB ADDRESS AND BLOCK COUNT
                 } else {
                     await sendDiscordAlert(
                         jobState.address,
