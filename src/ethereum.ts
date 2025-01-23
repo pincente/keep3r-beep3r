@@ -9,7 +9,7 @@ const multicallProviderLib = require('ethers-multicall-provider');
 const MulticallWrapper = multicallProviderLib.MulticallWrapper; // Use MulticallWrapper
 
 let provider;
-let multicallProvider;
+export let multicallProvider; // Export multicallProvider
 
 try {
     provider = getDefaultProvider(ETHEREUM_RPC_URL);

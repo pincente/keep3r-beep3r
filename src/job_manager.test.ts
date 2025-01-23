@@ -1,5 +1,5 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
-import { sequencerContract } from './ethereum';
+import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
 
 // Mock sequencerContract and provider for testing
@@ -11,7 +11,8 @@ jest.mock('./ethereum', () => ({
     multicallProvider: {
         provider: {
             getLogs: jest.fn()
-        }
+        },
+        getBlockNumber: jest.fn() // Mock getBlockNumber for multicallProvider
     }
 }));
 
@@ -40,6 +41,8 @@ describe('job_manager', () => {
 
     test('initializeJobStates should initialize job states correctly', async () => {
         const jobs = ['0x123', '0x456'];
+        (multicallProvider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock getBlockNumber
+
         await initializeJobStates(jobs);
         expect(jobStates.size).toBe(jobs.length);
         jobs.forEach(job => {
