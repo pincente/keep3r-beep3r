@@ -1,7 +1,6 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
 import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
-import { Mock } from 'jest-mock'; // Import Mock type
 
 // Mock sequencerContract and provider for testing
 jest.mock('./ethereum', () => ({

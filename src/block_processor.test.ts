@@ -4,7 +4,6 @@ import { sequencerContract, multicallProvider, jobInterface } from './ethereum';
 import { sendDiscordAlert } from './alerting';
 import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, UNWORKED_BLOCKS_THRESHOLD, MAX_JOB_AGE, IGNORED_ARGS_MESSAGES } from './config';
 import { ethers } from 'ethers';
-import { Mock } from 'jest-mock'; // Import Mock type
 
 // Mock modules and functions
 jest.mock('./ethereum', () => ({
