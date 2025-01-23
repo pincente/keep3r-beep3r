@@ -1,7 +1,8 @@
 import { ethers, Filter } from 'ethers';
 import { multicallProvider, sequencerContract, jobInterface } from './ethereum';
 import { logWithTimestamp } from './utils';
-import { IGNORED_ARGS_MESSAGES } from './config';
+import { IGNORED_ARGS_MESSAGES, UNWORKED_BLOCKS_THRESHOLD } from './config'; // Import UNWORKED_BLOCKS_THRESHOLD
+import { sendDiscordAlert } from './alerting'; // Import sendDiscordAlert
 
 export interface JobState {
     address: string;
@@ -145,6 +146,22 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
                 consecutiveUnworkedBlocks,
                 lastUpdateTime: Date.now()
             });
+
+            // Check for alert condition during initialization
+            if (consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
+                if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
+                    logWithTimestamp(`[Alert suppressed - Initialization] Job ${jobAddress} unworked for ${consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`);
+                } else {
+                    await sendDiscordAlert(
+                        jobAddress,
+                        consecutiveUnworkedBlocks,
+                        currentBlock,
+                        argsString
+                    );
+                    // Reset counter after alert to avoid repeated alerts during init
+                    jobStates.get(jobAddress)!.consecutiveUnworkedBlocks = BigInt(0);
+                }
+            }
         }
 
         logWithTimestamp(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
