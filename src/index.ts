@@ -185,11 +185,18 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             }
         }
 
+        // Create job contracts and store them in jobContracts map BEFORE workable calls
+        for (const jobAddress of jobs) {
+            const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here - important to use regular provider, not multicall one for event logs
+            jobContracts.set(jobAddress, jobContract);
+        }
+
+
         const networkIdentifier: string = await sequencerContract.getMaster(); // Get networkIdentifier for workable() - ADDED
 
         const workableResults = await Promise.all( // ADDED workable calls during init
             jobs.map(async (jobAddress) => {
-                const jobContract = jobContracts.get(jobAddress)!;
+                const jobContract = jobContracts.get(jobAddress)!; // Now jobContract should be available in the map
                 logWithTimestamp(`[Initialization] Calling workable() for job ${jobAddress}`); // ADDED log for workable call during init
                 return await jobContract.workable(networkIdentifier, { provider: multicallProvider });
             })
@@ -199,8 +206,6 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
         for (let i = 0; i < jobs.length; i++) { // Modified loop to use index i
             const jobAddress = jobs[i];
-            const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here - important to use regular provider, not multicall one for event logs
-            jobContracts.set(jobAddress, jobContract);
             const normalizedAddress = jobAddress.toLowerCase();
             const lastWorkedBlock = lastWorkedBlocks.get(normalizedAddress);
             let consecutiveUnworkedBlocks: bigint;
