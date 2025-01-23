@@ -1,33 +1,21 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
-
-import { sequencerContract } from './ethereum';
-
-const sequencerContractMock = sequencerContract as jest.Mocked<typeof sequencerContract>;
-
-import { multicallProvider } from './ethereum';
-
-const multicallProviderMock = multicallProvider as jest.Mocked<typeof multicallProvider>;
+import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
-
 
 // Mock sequencerContract and provider for testing
 jest.mock('./ethereum', () => {
-    const originalModule = jest.requireActual('./ethereum');
     return {
-        ...originalModule,
         sequencerContract: {
-            numJobs: jest.fn().mockResolvedValue(BigInt(2)),
-            jobAt: jest.fn()
-                .mockResolvedValueOnce('0xJobAddress1')
-                .mockResolvedValueOnce('0xJobAddress2'),
-            getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
+            numJobs: jest.fn(),
+            jobAt: jest.fn(),
+            getMaster: jest.fn(),
         },
         multicallProvider: {
             provider: {
-                getBlockNumber: jest.fn().mockResolvedValue(21684850),
-                getLogs: jest.fn().mockResolvedValue([]),
+                getBlockNumber: jest.fn(),
+                getLogs: jest.fn(),
             },
-            getBlockNumber: jest.fn().mockResolvedValue(21684850),
+            getBlockNumber: jest.fn(),
         },
     };
 });
