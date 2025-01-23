@@ -27,6 +27,14 @@ const BLOCK_CHECK_INTERVAL = parseInt(process.env.BLOCK_CHECK_INTERVAL || '15000
 const UNWORKED_BLOCKS_THRESHOLD = BigInt(process.env.UNWORKED_BLOCKS_THRESHOLD || '10'); // Reduced for testing
 const MAX_JOB_AGE = parseInt(process.env.MAX_JOB_AGE || '86400000'); // 24 hours in ms
 
+// Define args messages to ignore for alerts
+const IGNORED_ARGS_MESSAGES = [
+    "No ilks ready",
+    "Flap not possible",
+    "No distribution",
+    "No work to do"
+];
+
 export interface JobState {
     address: string;
     lastWorkedBlock: bigint;
@@ -252,14 +260,19 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             jobState.lastUpdateTime = Date.now();
 
             if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
-                await sendDiscordAlert(
-                    jobState.address,
-                    jobState.consecutiveUnworkedBlocks,
-                    blockNumber,
-                    argsString // Pass argsString to sendDiscordAlert
-                );
-                // Reset counter after alert to avoid repeated alerts
-                jobState.consecutiveUnworkedBlocks = BigInt(0);
+                // Check if argsString is in the ignore list
+                if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
+                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`);
+                } else {
+                    await sendDiscordAlert(
+                        jobState.address,
+                        jobState.consecutiveUnworkedBlocks,
+                        blockNumber,
+                        argsString // Pass argsString to sendDiscordAlert
+                    );
+                    // Reset counter after alert to avoid repeated alerts
+                    jobState.consecutiveUnworkedBlocks = BigInt(0);
+                }
             }
 
             console.log(`Job ${jobState.address} state updated:`, {
