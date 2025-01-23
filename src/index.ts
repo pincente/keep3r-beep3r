@@ -3,7 +3,9 @@ import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch';
-import MulticallProvider from 'ethers-multicall-provider'; // Modified import
+
+// Import MulticallProvider using require
+const MulticallProvider = require('ethers-multicall-provider').MulticallProvider;
 
 // Load environment variables from .env file
 dotenv.config();
