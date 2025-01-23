@@ -5,7 +5,7 @@ type MockContractMethod = jest.Mock & ethers.ContractMethod & {
     fragment: { name: string };
 };
 import { sequencerContract, multicallProvider } from './ethereum';
-import { ethers } from 'ethers';
+import { ethers, FunctionFragment } from 'ethers';
 
 
 // Helper function to create mock contract methods
@@ -14,7 +14,7 @@ const createMockContractMethod = (
     methodName: string
 ): MockContractMethod => {
     const mockFn = jest.fn().mockImplementation(mockImplementation) as unknown as MockContractMethod;
-    mockFn.fragment = { name: methodName }; // Minimal fragment
+    mockFn.fragment = FunctionFragment.from(`${methodName}()`);
     return mockFn;
 };
 

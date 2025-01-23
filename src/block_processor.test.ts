@@ -8,7 +8,7 @@ import { initializeJobStates, jobStates, JobState, checkIfJobWasWorked, jobContr
 import { sequencerContract, multicallProvider, jobInterface } from './ethereum';
 import { sendDiscordAlert } from './alerting';
 import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, UNWORKED_BLOCKS_THRESHOLD, MAX_JOB_AGE, IGNORED_ARGS_MESSAGES } from './config';
-import { ethers } from 'ethers';
+import { ethers, FunctionFragment } from 'ethers';
 
 // Helper function to create mock contract methods
 const createMockContractMethod = (
@@ -16,7 +16,7 @@ const createMockContractMethod = (
     methodName: string
 ): MockContractMethod => {
     const mockFn = jest.fn().mockImplementation(mockImplementation) as unknown as MockContractMethod;
-    mockFn.fragment = { name: methodName }; // Minimal fragment
+    mockFn.fragment = FunctionFragment.from(`${methodName}()`);
     return mockFn;
 };
 
@@ -71,9 +71,9 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            jobContracts.set(jobAddress, {
-                workable: createMockContractMethod(() => Promise.resolve([false, '0x']), 'workable'),
-            });
+            const mockContract = new ethers.Contract(jobAddress, [], multicallProvider) as jest.Mocked<ethers.Contract>;
+            mockContract.workable = createMockContractMethod(() => Promise.resolve([false, '0x']), 'workable');
+            jobContracts.set(jobAddress, mockContract);
         }
         // Mock getMaster, getBlockNumber already in module mock
     });
@@ -81,8 +81,8 @@ describe('block_processor', () => {
 
     describe('processBlockNumber', () => {
         it('should call workable for each job and update job state when workable is false and job was not worked', async () => {
-            (jobContracts.get(jobs[0])!.workable as MockContractMethod).mockResolvedValue([false, '0x']); // workable returns false for job1
-            (jobContracts.get(jobs[1])!.workable as MockContractMethod).mockResolvedValue([true, '0x']);  // workable returns true for job2
+            (jobContracts.get(jobs[0])!.workable as unknown as MockContractMethod).mockResolvedValue([false, '0x']); // workable returns false for job1
+            (jobContracts.get(jobs[1])!.workable as unknown as MockContractMethod).mockResolvedValue([true, '0x']);  // workable returns true for job2
             (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false); // No Work event
 
             await processBlockNumber(BigInt(21684851));
