@@ -49,7 +49,7 @@ export async function sendDiscordAlert(
         throw new Error("Discord webhook URL not configured.");
     }
 
-    if (webhookUrl.toUpperCase() === 'LOCAL') {
+    if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
         console.log(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`);
         return; // Skip actual Discord webhook call in local mode
     }
@@ -58,7 +58,7 @@ export async function sendDiscordAlert(
         content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`
     };
 
-    console.log(`Discord Webhook URL: ${webhookUrl}`); // ADD THIS LINE
+    console.log(`Discord Webhook URL: ${webhookUrl}`);
 
     try {
         const response = await fetch(webhookUrl, {
