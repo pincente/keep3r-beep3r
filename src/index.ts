@@ -53,6 +53,11 @@ export const jobStates: Map<string, JobState> = new Map();
 const jobContracts: Map<string, ethers.Contract> = new Map();
 let lastProcessedBlock: bigint;
 
+function logWithTimestamp(message: string) { // Helper function for timestamped logs
+    console.log(`[${new Date().toISOString()}] ${message}`);
+}
+
+
 export async function sendDiscordAlert(
     jobAddress: string,
     unworkedBlocks: bigint,
@@ -65,7 +70,7 @@ export async function sendDiscordAlert(
     }
 
     if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
-        console.log(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`);
+        logWithTimestamp(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`);
         return; // Skip actual Discord webhook call in local mode
     }
 
@@ -73,7 +78,7 @@ export async function sendDiscordAlert(
         content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`
     };
 
-    console.log(`Discord Webhook URL: ${webhookUrl}`);
+    logWithTimestamp(`Discord Webhook URL: ${webhookUrl}`);
 
     try {
         const response = await fetch(webhookUrl, {
@@ -88,7 +93,7 @@ export async function sendDiscordAlert(
             throw new Error(`Failed to send Discord alert. Status: ${response.status}, Body: ${responseBody}`);
         }
 
-        console.log(`Alert sent to Discord for job ${jobAddress}.`);
+        logWithTimestamp(`Alert sent to Discord for job ${jobAddress}.`);
     } catch (error) {
         console.error("Error sending Discord alert:", error);
         throw error;
@@ -142,11 +147,11 @@ export async function checkIfJobWasWorked(
 }
 
 export async function initializeJobStates(jobs: string[]): Promise<void> {
-    console.log('Initializing job states...');
+    logWithTimestamp('Initializing job states...');
     const currentBlock = BigInt(await provider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
-    console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for 8 jobs...`);
+    logWithTimestamp(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
 
     const jobInterface = new ethers.Interface(jobAbi);
     const workEventFragment = jobInterface.getEvent("Work");
@@ -166,7 +171,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     try {
         const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
-        console.log(`Fetched ${events.length} Work events from the blockchain.`);
+        logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`);
         const lastWorkedBlocks = new Map<string, bigint>();
 
         for (const event of events) {
@@ -202,7 +207,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             });
         }
 
-        console.log(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
+        logWithTimestamp(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
     } catch (error) {
         console.error("Error initializing job states:", error);
         throw error;
@@ -210,17 +215,19 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 }
 
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
+    logWithTimestamp(`[Block ${blockNumber.toString()}] Starting processBlockNumber`); // Log start of block processing
     // Get the networkIdentifier from the Sequencer contract
     const networkIdentifier: string = await sequencerContract.getMaster();
-    console.log(`networkIdentifier: ${networkIdentifier}`);
+    logWithTimestamp(`[Block ${blockNumber.toString()}] Network Identifier: ${networkIdentifier}`);
 
     if (networkIdentifier === ethers.ZeroHash) {
-        console.warn(`No active master network at block ${blockNumber}. Skipping job processing.`);
+        logWithTimestamp(`[Block ${blockNumber.toString()}] No active master network. Skipping job processing.`);
         return;
     }
 
     const jobStatesArray = Array.from(jobStates.values());
 
+    logWithTimestamp(`[Block ${blockNumber.toString()}] Fetching workable() results for ${jobStatesArray.length} jobs using Multicall...`); // Log multicall start
     // Directly call workable on each jobContract through multicallProvider
     const workableResults = await Promise.all(
         jobStatesArray.map(async (jobState) => {
@@ -228,6 +235,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             return await jobContract.workable(networkIdentifier, { provider: multicallProvider }); // Call workable with multicallProvider as option
         })
     );
+    logWithTimestamp(`[Block ${blockNumber.toString()}] Received workable() results.`); // Log multicall end
 
 
     for (let i = 0; i < jobStatesArray.length; i++) {
@@ -243,10 +251,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             argsString = `Non-UTF8 args: ${argsBytes}`;
         }
 
-        console.log(`workable() result for job ${jobState.address}:`, {
-            canWork: canWork,
-            args: argsString
-        });
+        logWithTimestamp(`[Block ${blockNumber.toString()}] workable() result for job ${jobState.address}: ${JSON.stringify({ canWork: canWork, args: argsString })}`);
 
         const previousCheckedBlock = jobState.lastCheckedBlock;
         jobState.lastCheckedBlock = blockNumber;
@@ -277,7 +282,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
         if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
             // Check if argsString is in the ignore list
             if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
-                console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log - ADDED JOB ADDRESS AND BLOCK COUNT
+                logWithTimestamp(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log - ADDED JOB ADDRESS AND BLOCK COUNT
             } else {
                 await sendDiscordAlert(
                     jobState.address,
@@ -290,13 +295,10 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             }
         }
 
-        console.log(`Job ${jobState.address} state updated:`, {
-            lastWorkedBlock: jobState.lastWorkedBlock.toString(),
-            consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(),
-            lastCheckedBlock: jobState.lastCheckedBlock.toString()
-        });
+        logWithTimestamp(`[Block ${blockNumber.toString()}] Job ${jobState.address} state updated: ${JSON.stringify({ lastWorkedBlock: jobState.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: jobState.lastCheckedBlock.toString() })}`);
     }
 
+    logWithTimestamp(`[Block ${blockNumber.toString()}] Finished processBlockNumber`); // Log end of block processing
 
 }
 
@@ -325,7 +327,7 @@ function cleanupInactiveJobs(): void {
 
     for (const [address, state] of jobStates.entries()) {
         if (currentTime - state.lastUpdateTime > MAX_JOB_AGE) {
-            console.log(`Removing inactive job: ${address}`);
+            logWithTimestamp(`Removing inactive job: ${address}`);
             jobStates.delete(address);
         }
     }
@@ -334,16 +336,16 @@ function cleanupInactiveJobs(): void {
 async function main() {
     try {
         const network = await multicallProvider.getNetwork(); // Use multicallProvider to get network - important to use multicall provider
-        console.log(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
+        logWithTimestamp(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
 
         const blockNumber = await multicallProvider.getBlockNumber(); // Use multicallProvider to get block number - important to use multicall provider
-        console.log(`Current block number: ${blockNumber}`);
+        logWithTimestamp(`Current block number: ${blockNumber}`);
 
         const activeJobs = await getActiveJobs();
-        console.log('Active Jobs:', activeJobs);
+        logWithTimestamp(`Active Jobs: ${activeJobs}`);
 
         await initializeJobStates(activeJobs);
-        console.log('Job states initialized:', Array.from(jobStates.values()));
+        logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()))}`);
 
         setInterval(async () => {
             await processNewBlocks();
@@ -360,12 +362,12 @@ async function main() {
 }
 
 process.on('SIGTERM', () => {
-    console.log('Received SIGTERM. Cleaning up...');
+    logWithTimestamp('Received SIGTERM. Cleaning up...');
     process.exit(0);
 });
 
 process.on('SIGINT', () => {
-    console.log('Received SIGINT. Cleaning up...');
+    logWithTimestamp('Received SIGINT. Cleaning up...');
     process.exit(0);
 });
 
