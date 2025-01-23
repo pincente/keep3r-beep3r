@@ -371,6 +371,10 @@ async function main() {
         logWithTimestamp(`Active Jobs: ${activeJobs}`);
 
         await initializeJobStates(activeJobs);
+        // Get the current block number *after* job states are initialized
+        lastProcessedBlock = BigInt(await multicallProvider.getBlockNumber()); // Initialize lastProcessedBlock here, after initialization!
+        logWithTimestamp(`Last processed block initialized to: ${lastProcessedBlock.toString()} (current block after init)`); // ADD LOG for init lastProcessedBlock
+
         // Modified log line to convert BigInts to strings
         logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
 
