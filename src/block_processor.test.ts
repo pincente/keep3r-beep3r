@@ -4,39 +4,37 @@ import { initializeJobStates, jobStates, JobState, checkIfJobWasWorked, jobContr
 import { sequencerContract, multicallProvider, jobInterface } from './ethereum';
 import { sendDiscordAlert } from './alerting';
 import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, UNWORKED_BLOCKS_THRESHOLD, MAX_JOB_AGE, IGNORED_ARGS_MESSAGES } from './config';
-import { ethers, FunctionFragment } from 'ethers';
+import { ethers } from 'ethers';
 
 
 
 // Mock modules and functions
-jest.mock('./ethereum', () => {
-    return {
-        sequencerContract: {
-            getMaster: createMockContractMethod(() => Promise.resolve('0xNetworkIdentifier'), 'getMaster'),
+jest.mock('./ethereum', () => ({
+    sequencerContract: {
+        getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
+    },
+    multicallProvider: {
+        getBlockNumber: jest.fn().mockResolvedValue(21684850),
+        provider: {
+            getBlockNumber: jest.fn().mockResolvedValue(21684850),
+            getLogs: jest.fn().mockResolvedValue([]),
         },
-        multicallProvider: {
-            getBlockNumber: createMockContractMethod(() => Promise.resolve(21684850), 'getBlockNumber'),
-            provider: {
-                getBlockNumber: createMockContractMethod(() => Promise.resolve(21684850), 'getBlockNumber'),
-                getLogs: createMockContractMethod(() => Promise.resolve([]), 'getLogs')
-            }
-        },
-        jobInterface: {
-            getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }) // Mock getEvent
-        }
-    };
-});
+    },
+    jobInterface: {
+        getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }),
+    },
+}));
 jest.mock('./job_manager', () => {
     const originalModule = jest.requireActual('./job_manager');
     return {
         ...originalModule,
-        jobContracts: new Map(), // Mock jobContracts map
-        checkIfJobWasWorked: createMockContractMethod(() => Promise.resolve(false), 'checkIfJobWasWorked'),
-        jobStates: new Map() // Mock jobStates map
+        jobContracts: new Map(),
+        checkIfJobWasWorked: jest.fn().mockResolvedValue(false),
+        jobStates: new Map(),
     };
 });
 jest.mock('./alerting', () => ({
-    sendDiscordAlert: createMockContractMethod(() => Promise.resolve(), 'sendDiscordAlert')
+    sendDiscordAlert: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('./config', () => ({
     UNWORKED_BLOCKS_THRESHOLD: BigInt(10), // Mock threshold
