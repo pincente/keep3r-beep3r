@@ -1,5 +1,5 @@
 import { ethers, Filter, Log, getDefaultProvider } from 'ethers'; // Import getDefaultProvider
-import * as dotenv from 'dotenv';
+import * * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch';
