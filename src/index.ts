@@ -267,13 +267,14 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     const jobStatesArray = Array.from(jobStates.values());
 
     logWithTimestamp(`[Block ${blockNumber.toString()}] Fetching workable() results for ${jobStatesArray.length} jobs using Multicall...`); // Log multicall start
-    // Directly call workable on each jobContract through multicallProvider
-    const workableResults = await Promise.all(
-        jobStatesArray.map(async (jobState) => {
-            const jobContract = jobContracts.get(jobState.address)!; // Get jobContract from map
-            return await jobContract.workable(networkIdentifier, { provider: multicallProvider }); // Call workable with multicallProvider as option
-        })
-    );
+    // Batch all workable calls using multicallProvider
+    const workableCalls = jobStatesArray.map(jobState => {
+        const jobContract = jobContracts.get(jobState.address)!;
+        return jobContract.workable(networkIdentifier, { provider: multicallProvider });
+    });
+
+    const workableResults = await Promise.all(workableCalls); // Execute all workable calls in parallel
+
     logWithTimestamp(`[Block ${blockNumber.toString()}] Received workable() results.`); // Log multicall end
 
 
