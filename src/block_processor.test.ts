@@ -6,32 +6,34 @@ import { ETHEREUM_RPC_URL, DISCORD_WEBHOOK_URL, BLOCK_CHECK_INTERVAL, BLOCK_BATC
 import { ethers } from 'ethers';
 
 // Mock modules and functions
-jest.mock('./ethereum', () => ({
-    sequencerContract: {
-        getMaster: jest.fn(),
-    },
-    multicallProvider: {
-        getBlockNumber: jest.fn(),
-        provider: {
-            getBlockNumber: jest.fn(),
-            getLogs: jest.fn()
+jest.mock('./ethereum', () => {
+    return {
+        sequencerContract: {
+            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier')),
+        },
+        multicallProvider: {
+            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)),
+            provider: {
+                getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)),
+                getLogs: jest.fn().mockImplementation(() => Promise.resolve([]))
+            }
+        },
+        jobInterface: {
+            getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }) // Mock getEvent
         }
-    },
-    jobInterface: {
-        getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }) // Mock getEvent
-    }
-}));
+    };
+});
 jest.mock('./job_manager', () => {
     const originalModule = jest.requireActual('./job_manager');
     return {
         ...originalModule,
         jobContracts: new Map(), // Mock jobContracts map
-        checkIfJobWasWorked: jest.fn(),
+        checkIfJobWasWorked: jest.fn().mockImplementation(() => Promise.resolve(false)),
         jobStates: new Map() // Mock jobStates map
     };
 });
 jest.mock('./alerting', () => ({
-    sendDiscordAlert: jest.fn()
+    sendDiscordAlert: jest.fn().mockImplementation(() => Promise.resolve())
 }));
 jest.mock('./config', () => ({
     UNWORKED_BLOCKS_THRESHOLD: BigInt(10), // Mock threshold
@@ -53,11 +55,9 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            jobContracts.set(jobAddress, { workable: jest.fn() }); // Mock workable function, removed 'as any'
+            jobContracts.set(jobAddress, { workable: jest.fn().mockImplementation(() => Promise.resolve([false, '0x'] )) }); // Mock workable function
         }
-        (sequencerContract.getMaster as jest.Mock).mockResolvedValue('0xNetworkIdentifier'); // Mock getMaster to return a default value
-        (multicallProvider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock initial block number
-        (multicallProvider.provider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock initial block number
+        // Mock getMaster, getBlockNumber already in module mock
     });
 
 

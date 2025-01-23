@@ -3,19 +3,21 @@ import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
 
 // Mock sequencerContract and provider for testing
-jest.mock('./ethereum', () => ({
-    sequencerContract: {
-        numJobs: jest.fn(), // removed 'as any'
-        jobAt: jest.fn(),   // removed 'as any'
-        getMaster: jest.fn() // removed 'as any'
-    },
-    multicallProvider: {
-        provider: {
-            getLogs: jest.fn() // removed 'as any'
+jest.mock('./ethereum', () => {
+    return {
+        sequencerContract: {
+            numJobs: jest.fn().mockImplementation(() => Promise.resolve(BigInt(2))),
+            jobAt: jest.fn().mockImplementation(() => Promise.resolve('0xJobAddress1')),
+            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier'))
         },
-        getBlockNumber: jest.fn() // removed 'as any'
-    }
-}));
+        multicallProvider: {
+            provider: {
+                getLogs: jest.fn().mockImplementation(() => Promise.resolve([]))
+            },
+            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850))
+        }
+    };
+});
 
 describe('job_manager', () => {
     beforeEach(() => {
