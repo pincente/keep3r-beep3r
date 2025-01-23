@@ -29,6 +29,7 @@ const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, m
 
 // Constants
 const BLOCK_CHECK_INTERVAL = parseInt(process.env.BLOCK_CHECK_INTERVAL || '15000');
+const BLOCK_BATCH_INTERVAL_MINUTES = parseInt(process.env.BLOCK_BATCH_INTERVAL || '5'); // Default to 5 minutes
 const UNWORKED_BLOCKS_THRESHOLD = BigInt(process.env.UNWORKED_BLOCKS_THRESHOLD || '10'); // Reduced for testing
 const MAX_JOB_AGE = parseInt(process.env.MAX_JOB_AGE || '86400000'); // 24 hours in ms
 
@@ -324,11 +325,17 @@ export async function processNewBlocks(): Promise<void> {
             logWithTimestamp(`[processNewBlocks] Initializing lastProcessedBlock to: ${lastProcessedBlock.toString()}`); // ADD LOG
         }
 
-        for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(1)) {
-            logWithTimestamp(`[processNewBlocks] Processing block: ${block.toString()}`); // ADD LOG
-            await processBlockNumber(block);
-            lastProcessedBlock = block; // UPDATE lastProcessedBlock HERE!
+        const blockBatchIntervalBlocks = Math.max(1, Math.floor((BLOCK_BATCH_INTERVAL_MINUTES * 60 * 1000) / BLOCK_CHECK_INTERVAL)); // Ensure at least 1 block is processed
+
+        for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(blockBatchIntervalBlocks)) {
+            const toBlock = block + BigInt(blockBatchIntervalBlocks) - BigInt(1) > currentBlock ? currentBlock : block + BigInt(blockBatchIntervalBlocks) - BigInt(1);
+            logWithTimestamp(`[processNewBlocks] Processing blocks from: ${block.toString()} to ${toBlock.toString()}`); // ADD LOG
+            for (let b = block; b <= toBlock; b = b + BigInt(1)) {
+                await processBlockNumber(b);
+                lastProcessedBlock = b; // Update lastProcessedBlock in inner loop
+            }
         }
+
 
         logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG - Now logged after loop
 
@@ -367,9 +374,11 @@ async function main() {
         logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
 
 
+        const batchIntervalMs = BLOCK_BATCH_INTERVAL_MINUTES * 60 * 1000; // Convert minutes to milliseconds
+
         setInterval(async () => {
             await processNewBlocks();
-        }, BLOCK_CHECK_INTERVAL);
+        }, batchIntervalMs); // Use batchIntervalMs for setInterval
 
         setInterval(() => {
             cleanupInactiveJobs();

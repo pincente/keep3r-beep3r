@@ -37,10 +37,11 @@ By default, alerts are suppressed for jobs that are not workable due to the foll
    DISCORD_WEBHOOK_URL=YOUR_DISCORD_WEBHOOK_URL
    UNWORKED_BLOCKS_THRESHOLD=1000 # Number of blocks a job can be unworked before an alert is sent (default: 1000)
    BLOCK_CHECK_INTERVAL=15000    # Interval in milliseconds to check for new blocks (default: 15000)
+   BLOCK_BATCH_INTERVAL=5       # Interval in minutes to batch process blocks (default: 5 minutes)
    MAX_JOB_AGE=86400000         # Maximum age in milliseconds for a job to be considered active (default: 24 hours)
    ```
 
-   Replace placeholders with actual values. You can adjust `UNWORKED_BLOCKS_THRESHOLD`, `BLOCK_CHECK_INTERVAL`, and `MAX_JOB_AGE` as needed.
+   Replace placeholders with actual values. You can adjust `UNWORKED_BLOCKS_THRESHOLD`, `BLOCK_CHECK_INTERVAL`, `BLOCK_BATCH_INTERVAL`, and `MAX_JOB_AGE` as needed.
 
 ## Building the Application
 
@@ -82,5 +83,6 @@ npm test
 
 - Ensure your Ethereum RPC URL and Discord webhook URL are correctly configured.
 - The `UNWORKED_BLOCKS_THRESHOLD` in the `.env` file determines how many blocks a job can remain unworked before an alert is triggered. The default is 1000 blocks, but you can adjust this value. For testing purposes, you may want to lower this threshold.
+- The `BLOCK_BATCH_INTERVAL` in the `.env` file determines the interval in minutes at which blocks are processed in batches. The default is 5 minutes. Adjust this value to control the frequency of block processing and alerts.
 - The application now includes alert suppression for common "not workable" reasons. See the `IGNORED_ARGS_MESSAGES` array in `src/index.ts` for the list of suppressed reasons and how to customize it.
 - For further improvements, consider implementing Multicall for efficiency and integrating a logging library for better observability.
