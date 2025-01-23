@@ -24,7 +24,7 @@ const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, p
 
 // Constants
 const BLOCK_CHECK_INTERVAL = parseInt(process.env.BLOCK_CHECK_INTERVAL || '15000');
-const UNWORKED_BLOCKS_THRESHOLD = BigInt(process.env.UNWORKED_BLOCKS_THRESHOLD || '1000');
+const UNWORKED_BLOCKS_THRESHOLD = BigInt(process.env.UNWORKED_BLOCKS_THRESHOLD || '10'); // Reduced for testing
 const MAX_JOB_AGE = parseInt(process.env.MAX_JOB_AGE || '86400000'); // 24 hours in ms
 
 export interface JobState {
@@ -42,7 +42,8 @@ let lastProcessedBlock: bigint;
 export async function sendDiscordAlert(
     jobAddress: string,
     unworkedBlocks: bigint,
-    currentBlock: bigint
+    currentBlock: bigint,
+    argsString: string | null
 ): Promise<void> {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
@@ -50,12 +51,12 @@ export async function sendDiscordAlert(
     }
 
     if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
-        console.log(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`);
+        console.log(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`);
         return; // Skip actual Discord webhook call in local mode
     }
 
     const message = {
-        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`
+        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`
     };
 
     console.log(`Discord Webhook URL: ${webhookUrl}`);
@@ -254,7 +255,8 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
                 await sendDiscordAlert(
                     jobState.address,
                     jobState.consecutiveUnworkedBlocks,
-                    blockNumber
+                    blockNumber,
+                    argsString // Pass argsString to sendDiscordAlert
                 );
                 // Reset counter after alert to avoid repeated alerts
                 jobState.consecutiveUnworkedBlocks = BigInt(0);
