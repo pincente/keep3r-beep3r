@@ -295,6 +295,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             }
         }
 
+        // Modified log line to convert BigInts to strings
         logWithTimestamp(`[Block ${blockNumber.toString()}] Job ${jobState.address} state updated: ${JSON.stringify({ lastWorkedBlock: jobState.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: jobState.lastCheckedBlock.toString() })}`);
     }
 
@@ -345,7 +346,9 @@ async function main() {
         logWithTimestamp(`Active Jobs: ${activeJobs}`);
 
         await initializeJobStates(activeJobs);
-        logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()))}`);
+        // Modified log line to convert BigInts to strings
+        logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
+
 
         setInterval(async () => {
             await processNewBlocks();
