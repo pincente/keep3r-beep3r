@@ -185,7 +185,20 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             }
         }
 
-        for (const jobAddress of jobs) {
+        const networkIdentifier: string = await sequencerContract.getMaster(); // Get networkIdentifier for workable() - ADDED
+
+        const workableResults = await Promise.all( // ADDED workable calls during init
+            jobs.map(async (jobAddress) => {
+                const jobContract = jobContracts.get(jobAddress)!;
+                logWithTimestamp(`[Initialization] Calling workable() for job ${jobAddress}`); // ADDED log for workable call during init
+                return await jobContract.workable(networkIdentifier, { provider: multicallProvider });
+            })
+        );
+        logWithTimestamp(`[Initialization] Received workable() results.`); // ADDED log for workable results during init
+
+
+        for (let i = 0; i < jobs.length; i++) { // Modified loop to use index i
+            const jobAddress = jobs[i];
             const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here - important to use regular provider, not multicall one for event logs
             jobContracts.set(jobAddress, jobContract);
             const normalizedAddress = jobAddress.toLowerCase();
@@ -199,6 +212,19 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
                 // Job has not been worked in the last 1000 blocks (or possibly ever)
                 consecutiveUnworkedBlocks = currentBlock - fromBlock;
             }
+
+            const workableResult = workableResults[i]; // Get corresponding workable result - ADDED
+            const canWork = workableResult[0]; // ADDED
+            const argsBytes = workableResult[1]; // ADDED
+            let argsString: string | null = null; // ADDED
+
+            try { // ADDED argsString decoding
+                argsString = new TextDecoder().decode(ethers.getBytes(argsBytes)); // ADDED
+            } catch (e) { // ADDED
+                argsString = `Non-UTF8 args: ${argsBytes}`; // ADDED
+            } // ADDED
+            logWithTimestamp(`[Initialization] workable() result for job ${jobAddress}: ${JSON.stringify({ canWork: canWork, args: argsString })}`); // ADDED log for workable result during init
+
 
             jobStates.set(jobAddress, {
                 address: jobAddress,
