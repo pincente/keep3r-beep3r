@@ -5,15 +5,15 @@ import { ethers } from 'ethers';
 // Mock sequencerContract and provider for testing
 jest.mock('./ethereum', () => ({
     sequencerContract: {
-        numJobs: jest.fn(),
-        jobAt: jest.fn(),
-        getMaster: jest.fn()
+        numJobs: jest.fn(), // removed 'as any'
+        jobAt: jest.fn(),   // removed 'as any'
+        getMaster: jest.fn() // removed 'as any'
     },
     multicallProvider: {
         provider: {
-            getLogs: jest.fn()
+            getLogs: jest.fn() // removed 'as any'
         },
-        getBlockNumber: jest.fn()
+        getBlockNumber: jest.fn() // removed 'as any'
     }
 }));
 

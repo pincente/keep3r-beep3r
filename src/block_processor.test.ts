@@ -53,7 +53,7 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            jobContracts.set(jobAddress, { workable: jest.fn() } as any); // Mock workable function
+            jobContracts.set(jobAddress, { workable: jest.fn() }); // Mock workable function, removed 'as any'
         }
         (sequencerContract.getMaster as jest.Mock).mockResolvedValue('0xNetworkIdentifier'); // Mock getMaster to return a default value
         (multicallProvider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock initial block number
