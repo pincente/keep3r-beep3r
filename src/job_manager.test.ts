@@ -1,11 +1,19 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
+
+// Define a custom type for mock contract methods
+type MockContractMethod = jest.Mock & ethers.ContractMethod & {
+    fragment: { name: string };
+};
 import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
 
 
 // Helper function to create mock contract methods
-const createMockContractMethod = (mockImplementation: (...args: any[]) => any, methodName: string) => {
-    const mockFn = jest.fn().mockImplementation(mockImplementation) as jest.Mock & { fragment: any };
+const createMockContractMethod = (
+    mockImplementation: (...args: any[]) => any,
+    methodName: string
+): MockContractMethod => {
+    const mockFn = jest.fn().mockImplementation(mockImplementation) as unknown as MockContractMethod;
     mockFn.fragment = { name: methodName }; // Minimal fragment
     return mockFn;
 };
@@ -35,9 +43,9 @@ describe('job_manager', () => {
     });
 
     test('getActiveJobs should return an array of job addresses', async () => {
-        (sequencerContract.numJobs as jest.Mock).mockResolvedValue(BigInt(2));
-        (sequencerContract.jobAt as jest.Mock).mockResolvedValueOnce('0xJobAddress1');
-        (sequencerContract.jobAt as jest.Mock).mockResolvedValueOnce('0xJobAddress2');
+        (sequencerContract.numJobs as MockContractMethod).mockResolvedValue(BigInt(2));
+        (sequencerContract.jobAt as MockContractMethod).mockResolvedValueOnce('0xJobAddress1');
+        (sequencerContract.jobAt as MockContractMethod).mockResolvedValueOnce('0xJobAddress2');
 
         const jobs = await getActiveJobs();
         expect(jobs).toEqual(['0xJobAddress1', '0xJobAddress2']);
