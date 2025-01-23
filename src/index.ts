@@ -40,13 +40,18 @@ const jobContracts: Map<string, ethers.Contract> = new Map();
 let lastProcessedBlock: bigint;
 
 export async function sendDiscordAlert(
-    jobAddress: string, 
-    unworkedBlocks: bigint, 
+    jobAddress: string,
+    unworkedBlocks: bigint,
     currentBlock: bigint
 ): Promise<void> {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
         throw new Error("Discord webhook URL not configured.");
+    }
+
+    if (webhookUrl.toUpperCase() === 'LOCAL') {
+        console.log(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`);
+        return; // Skip actual Discord webhook call in local mode
     }
 
     const message = {
@@ -150,7 +155,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         for (const event of events) {
             const jobAddress = event.address.toLowerCase();
             const eventBlockNumber = BigInt(event.blockNumber);
-            
+
             if (!lastWorkedBlocks.has(jobAddress) || eventBlockNumber > lastWorkedBlocks.get(jobAddress)!) {
                 lastWorkedBlocks.set(jobAddress, eventBlockNumber);
             }
@@ -261,7 +266,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 export async function processNewBlocks(): Promise<void> {
     try {
         const currentBlock = BigInt(await provider.getBlockNumber());
-        
+
         if (!lastProcessedBlock) {
             lastProcessedBlock = currentBlock - BigInt(1);
         }
@@ -278,7 +283,7 @@ export async function processNewBlocks(): Promise<void> {
 
 function cleanupInactiveJobs(): void {
     const currentTime = Date.now();
-    
+
     for (const [address, state] of jobStates.entries()) {
         if (currentTime - state.lastUpdateTime > MAX_JOB_AGE) {
             console.log(`Removing inactive job: ${address}`);
@@ -291,13 +296,13 @@ async function main() {
     try {
         const network = await provider.getNetwork();
         console.log(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
-        
+
         const blockNumber = await provider.getBlockNumber();
         console.log(`Current block number: ${blockNumber}`);
 
         const activeJobs = await getActiveJobs();
         console.log('Active Jobs:', activeJobs);
-        
+
         await initializeJobStates(activeJobs);
         console.log('Job states initialized:', Array.from(jobStates.values()));
 
