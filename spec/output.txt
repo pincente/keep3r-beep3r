@@ -1,0 +1,1025 @@
+Initializing job states...
+Fetching Work events from block 21683224 to 21684224 for 8 jobs...
+Fetched 0 Work events from the blockchain.
+Initialization complete. Job states have been set up for 8 jobs.
+Job states initialized: [
+  {
+    address: '0x67AD4000e73579B9725eE3A149F85C4Af0A61361',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509847
+  },
+  {
+    address: '0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509847
+  },
+  {
+    address: '0xc32506E9bB590971671b649d9B8e18CB6260559F',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509847
+  },
+  {
+    address: '0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509848
+  },
+  {
+    address: '0xe717Ec34b2707fc8c226b34be5eae8482d06ED03',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509848
+  },
+  {
+    address: '0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509848
+  },
+  {
+    address: '0x0C86162ba3E507592fC8282b07cF18c7F902C401',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509848
+  },
+  {
+    address: '0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5',
+    lastWorkedBlock: 21683224n,
+    lastCheckedBlock: 21684224n,
+    consecutiveUnworkedBlocks: 1000n,
+    lastUpdateTime: 1737599509848
+  }
+]
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: {
+  canWork: true,
+  args: '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00�\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03UNIV2DAIUSDC-A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00GUNIV3DAIUSDC1-A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00GUNIV3DAIUSDC2-A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02GUNIV3DAIUSDC1-A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00GUNIV3DAIUSDC2-A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+}
+[Discord Alert - LOCAL MODE] Alert! Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 hasn't been worked for 1001 blocks (current block: 21684226). Reason: @�UNIV2DAIUSDC-AGUNIV3DAIUSDC1-AGUNIV3DAIUSDC2-AGUNIV3DAIUSDC1-AGUNIV3DAIUSDC2-A
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '0',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1002 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1002 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1002 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1002 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1002 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1002 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1002 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1002',
+  lastCheckedBlock: '21684226'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1003 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1003 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1003 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1003 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1003 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1003 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1003 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1003',
+  lastCheckedBlock: '21684227'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1004 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1004 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1004 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1004 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '2',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1004 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1004 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1004 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1004',
+  lastCheckedBlock: '21684228'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1005 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1005 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1005 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1005 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '3',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1005 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1005 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1005 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1005',
+  lastCheckedBlock: '21684229'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1006 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1006 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1006 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1006 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '4',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1006 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1006 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1006 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1006',
+  lastCheckedBlock: '21684230'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1007 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1007 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1007 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1007 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '5',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1007 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1007 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1007 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1007',
+  lastCheckedBlock: '21684231'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1008 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1008 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1008 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1008 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '6',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1008 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1008 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1008 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1008',
+  lastCheckedBlock: '21684232'
+}
+networkIdentifier: 0x47454c41544f0000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1009 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1009 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1009 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1009 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '7',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1009 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1009 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1009 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1009',
+  lastCheckedBlock: '21684233'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1010 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1010 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1010 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1010 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '8',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1010 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1010 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1010 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1010',
+  lastCheckedBlock: '21684234'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1011 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1011 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1011 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1011 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '9',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1011 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1011 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1011 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1011',
+  lastCheckedBlock: '21684235'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1012 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1012 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1012 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1012 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 10 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '10',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1012 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1012 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1012 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1012',
+  lastCheckedBlock: '21684236'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1013 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1013 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1013 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1013 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 11 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '11',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1013 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1013 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1013 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1013',
+  lastCheckedBlock: '21684237'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1014 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1014 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1014 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1014 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 12 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '12',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1014 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1014 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1014 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1014',
+  lastCheckedBlock: '21684238'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1015 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1015 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1015 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1015 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 13 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '13',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1015 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1015 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1015 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1015',
+  lastCheckedBlock: '21684239'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1016 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1016 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1016 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1016 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 14 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '14',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1016 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1016 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1016 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1016',
+  lastCheckedBlock: '21684240'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1017 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1017 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1017 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1017 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 15 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '15',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1017 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1017 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1017 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1017',
+  lastCheckedBlock: '21684241'
+}
+networkIdentifier: 0x4b45455033520000000000000000000000000000000000000000000000000000
+workable() result for job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB: { canWork: false, args: 'shouldUpdate is false' }
+workable() result for job 0xc32506E9bB590971671b649d9B8e18CB6260559F: { canWork: false, args: 'Flap not possible' }
+workable() result for job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF: { canWork: false, args: 'No ilks ready' }
+workable() result for job 0x0C86162ba3E507592fC8282b07cF18c7F902C401: { canWork: false, args: 'No work to do' }
+workable() result for job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5: { canWork: false, args: 'No distribution' }
+[Alert suppressed] Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 unworked for 1018 blocks due to ignored reason: No ilks ready
+Job 0x67AD4000e73579B9725eE3A149F85C4Af0A61361 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB unworked for 1018 blocks due to ignored reason: shouldUpdate is false
+Job 0x8F8f2FC1F0380B9Ff4fE5c3142d0811aC89E32fB state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0xc32506E9bB590971671b649d9B8e18CB6260559F unworked for 1018 blocks due to ignored reason: Flap not possible
+Job 0xc32506E9bB590971671b649d9B8e18CB6260559F state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF unworked for 1018 blocks due to ignored reason: No ilks ready
+Job 0x7E93C4f61C8E8874e7366cDbfeFF934Ed089f9fF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 unworked for 16 blocks due to ignored reason: No ilks ready
+Job 0xe717Ec34b2707fc8c226b34be5eae8482d06ED03 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '16',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF unworked for 1018 blocks due to ignored reason: No ilks ready
+Job 0x2Ea4aDE144485895B923466B4521F5ebC03a0AeF state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 unworked for 1018 blocks due to ignored reason: No work to do
+Job 0x0C86162ba3E507592fC8282b07cF18c7F902C401 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
+[Alert suppressed] Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 unworked for 1018 blocks due to ignored reason: No distribution
+Job 0x6464C34A02DD155dd0c630CE233DD6e21C24F9A5 state updated: {
+  lastWorkedBlock: '21683224',
+  consecutiveUnworkedBlocks: '1018',
+  lastCheckedBlock: '21684242'
+}
