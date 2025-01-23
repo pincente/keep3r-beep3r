@@ -149,7 +149,7 @@ export async function checkIfJobWasWorked(
 }
 
 export async function initializeJobStates(jobs: string[]): Promise<void> {
-    logWithTimestamp('Initializing job states...');
+    logWithTimestamp('Initializing job states...'); // ADD LOG - start of init
     const currentBlock = BigInt(await provider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
@@ -173,7 +173,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     try {
         const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
-        logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`);
+        logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`); // ADD LOG - fetched events
         const lastWorkedBlocks = new Map<string, bigint>();
 
         for (const event of events) {
@@ -209,7 +209,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             });
         }
 
-        logWithTimestamp(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`);
+        logWithTimestamp(`Initialization complete. Job states have been set up for ${jobStates.size} jobs.`); // ADD LOG - end of init, job count
     } catch (error) {
         console.error("Error initializing job states:", error);
         throw error;
