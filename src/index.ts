@@ -163,6 +163,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     }
 
     const workEventSignature = workEventFragment.topicHash;
+    logWithTimestamp(`[Initialization] Work Event Signature: ${workEventSignature}`); // ADDED log for workEventSignature
 
     const filter: Filter = {
         address: jobs,
