@@ -6,15 +6,15 @@ import { Mock } from 'jest-mock'; // Import Mock type
 // Mock sequencerContract and provider for testing
 jest.mock('./ethereum', () => ({
     sequencerContract: {
-        numJobs: jest.fn() as Mock<any, any>, // Explicitly cast to Mock
-        jobAt: jest.fn() as Mock<any, any>,   // Explicitly cast to Mock
-        getMaster: jest.fn() as Mock<any, any> // Mock getMaster as it's used in initializeJobStates - Explicitly cast to Mock
+        numJobs: jest.fn(),
+        jobAt: jest.fn(),
+        getMaster: jest.fn()
     },
     multicallProvider: {
         provider: {
             getLogs: jest.fn()
         },
-        getBlockNumber: jest.fn() // Mock getBlockNumber for multicallProvider
+        getBlockNumber: jest.fn()
     }
 }));
 
@@ -25,9 +25,9 @@ describe('job_manager', () => {
     });
 
     test('getActiveJobs should return an array of job addresses', async () => {
-        (sequencerContract.numJobs as Mock<any, any>).mockResolvedValue(BigInt(2)); // Explicitly cast to Mock
-        (sequencerContract.jobAt as Mock<any, any>).mockResolvedValueOnce('0xJobAddress1'); // Explicitly cast to Mock
-        (sequencerContract.jobAt as Mock<any, any>).mockResolvedValueOnce('0xJobAddress2'); // Explicitly cast to Mock
+        (sequencerContract.numJobs as jest.Mock).mockResolvedValue(BigInt(2));
+        (sequencerContract.jobAt as jest.Mock).mockResolvedValueOnce('0xJobAddress1');
+        (sequencerContract.jobAt as jest.Mock).mockResolvedValueOnce('0xJobAddress2');
 
         const jobs = await getActiveJobs();
         expect(jobs).toEqual(['0xJobAddress1', '0xJobAddress2']);
@@ -36,7 +36,7 @@ describe('job_manager', () => {
     });
 
     test('getActiveJobs should handle errors when fetching jobs', async () => {
-        (sequencerContract.numJobs as Mock<any, any>).mockRejectedValue(new Error('RPC Error')); // Explicitly cast to Mock
+        (sequencerContract.numJobs as jest.Mock).mockRejectedValue(new Error('RPC Error'));
 
         await expect(getActiveJobs()).rejects.toThrow('Error fetching active jobs');
     });
@@ -44,7 +44,7 @@ describe('job_manager', () => {
     test('initializeJobStates should initialize job states correctly', async () => {
         const jobs = ['0x123', '0x456'];
         (multicallProvider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock getBlockNumber
-        (sequencerContract.getMaster as Mock<any, any>).mockResolvedValue('0xNetworkIdentifier'); // Mock getMaster - Explicitly cast to Mock
+        (sequencerContract.getMaster as jest.Mock).mockResolvedValue('0xNetworkIdentifier'); // Mock getMaster
 
         await initializeJobStates(jobs);
         expect(jobStates.size).toBe(jobs.length);
