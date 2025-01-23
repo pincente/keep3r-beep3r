@@ -1,6 +1,21 @@
 import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasWorked } from './job_manager';
 
-import { sequencerContract, multicallProvider } from './ethereum';
+import { sequencerContract } from './ethereum';
+
+const sequencerContractMock = sequencerContract as unknown as {
+  numJobs: jest.MockedFunction<() => Promise<bigint>>;
+  jobAt: jest.MockedFunction<(index: bigint) => Promise<string>>;
+  // Add other methods if needed
+};
+
+import { multicallProvider } from './ethereum';
+
+const multicallProviderMock = multicallProvider as unknown as {
+  provider: {
+    getLogs: jest.MockedFunction<(_filter: any) => Promise<any[]>>;
+  };
+  getBlockNumber: jest.MockedFunction<() => Promise<number>>;
+};
 import { ethers } from 'ethers';
 
 
@@ -30,9 +45,9 @@ describe('job_manager', () => {
     });
 
     test('getActiveJobs should return an array of job addresses', async () => {
-        (sequencerContract.numJobs as MockContractMethod).mockResolvedValue(BigInt(2));
-        (sequencerContract.jobAt as MockContractMethod).mockResolvedValueOnce('0xJobAddress1');
-        (sequencerContract.jobAt as MockContractMethod).mockResolvedValueOnce('0xJobAddress2');
+        sequencerContractMock.numJobs.mockResolvedValue(BigInt(2));
+        sequencerContractMock.jobAt.mockResolvedValueOnce('0xJobAddress1');
+        sequencerContractMock.jobAt.mockResolvedValueOnce('0xJobAddress2');
 
         const jobs = await getActiveJobs();
         expect(jobs).toEqual(['0xJobAddress1', '0xJobAddress2']);
@@ -60,7 +75,7 @@ describe('job_manager', () => {
 
     describe('checkIfJobWasWorked', () => {
         it('should return true if Work events are found', async () => {
-            multicallProvider.provider.getLogs.mockResolvedValueOnce(['event1', 'event2']); // Mock with some events
+            multicallProviderMock.provider.getLogs.mockResolvedValueOnce(['event1', 'event2']); // Mock with some events
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
