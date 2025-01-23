@@ -1,5 +1,5 @@
 import { ethers, Filter, Log, getDefaultProvider } from 'ethers'; // Import getDefaultProvider
-import * * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch';
@@ -52,6 +52,7 @@ export interface JobState {
 export const jobStates: Map<string, JobState> = new Map();
 const jobContracts: Map<string, ethers.Contract> = new Map();
 let lastProcessedBlock: bigint;
+let processingBlocks = false; // Flag to prevent concurrent block processing
 
 function logWithTimestamp(message: string) { // Helper function for timestamped logs
     console.log(`[${new Date().toISOString()}] ${message}`);
@@ -305,6 +306,11 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 
 
 export async function processNewBlocks(): Promise<void> {
+    if (processingBlocks) {
+        logWithTimestamp("[processNewBlocks] Already processing blocks, skipping this interval.");
+        return;
+    }
+    processingBlocks = true;
     logWithTimestamp("[processNewBlocks] Starting processNewBlocks"); // ADD LOG
     try {
         // Modified line: Use underlying provider to get block number
@@ -328,8 +334,10 @@ export async function processNewBlocks(): Promise<void> {
 
     } catch (error) {
         console.error("Error processing new blocks:", error);
+    } finally {
+        processingBlocks = false; // Reset the flag when block processing is complete, even if there was an error
+        logWithTimestamp("[processNewBlocks] Finished processNewBlocks"); // ADD LOG
     }
-    logWithTimestamp("[processNewBlocks] Finished processNewBlocks"); // ADD LOG
 }
 
 function cleanupInactiveJobs(): void {
