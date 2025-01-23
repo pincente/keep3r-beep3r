@@ -7,8 +7,15 @@ import { UNWORKED_BLOCKS_THRESHOLD } from './config';
 
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     logWithTimestamp(`[Block ${blockNumber.toString()}] Starting processBlockNumber`);
-    const networkIdentifier: string = await sequencerContract.getMaster();
-    logWithTimestamp(`[Block ${blockNumber.toString()}] Network Identifier: ${networkIdentifier}`);
+    let networkIdentifier: string;
+    try {
+        networkIdentifier = await sequencerContract.getMaster();
+        logWithTimestamp(`[Block ${blockNumber.toString()}] Network Identifier: ${networkIdentifier}`);
+    } catch (error) {
+        console.error(`[Block ${blockNumber.toString()}] Error fetching Network Identifier:`, error); // Enhanced logging
+        return; // Skip job processing for this block if network identifier fetch fails
+    }
+
 
     if (networkIdentifier === ethers.ZeroHash) {
         logWithTimestamp(`[Block ${blockNumber.toString()}] No active master network. Skipping job processing.`);
@@ -23,7 +30,14 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
         return jobContract.workable(networkIdentifier, { provider: multicallProvider });
     });
 
-    const workableResults = await Promise.all(workableCalls);
+    let workableResults;
+    try {
+        workableResults = await Promise.all(workableCalls); // Execute all workable calls in parallel
+    } catch (error) {
+        console.error(`[Block ${blockNumber.toString()}] Error in multicall workable() calls:`, error); // Enhanced logging
+        return; // Skip job processing for this block if workable calls fail
+    }
+
 
     logWithTimestamp(`[Block ${blockNumber.toString()}] Received workable() results.`);
 
@@ -79,6 +93,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             }
         }
 
+        // Modified log line to convert BigInts to strings
         logWithTimestamp(`[Block ${blockNumber.toString()}] Job ${jobState.address} state updated: ${JSON.stringify({ lastWorkedBlock: jobState.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: jobState.lastCheckedBlock.toString() })}`);
     }
 
@@ -113,6 +128,7 @@ export async function processNewBlocks(lastProcessedBlock: bigint, blockBatchInt
                 lastProcessedBlock = b;
             }
         }
+
 
         logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`);
         logWithTimestamp(`[processNewBlocks] Waiting for next interval. Interval: ${blockBatchIntervalMinutes} minute(s)`);

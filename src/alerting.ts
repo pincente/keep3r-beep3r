@@ -31,12 +31,13 @@ export async function sendDiscordAlert(
         const responseBody = await response.text();
 
         if (!response.ok) {
+            logWithTimestamp(`[Discord Alert] Failed to send alert for job ${jobAddress}. Status: ${response.status}, Body: ${responseBody}`); // Enhanced logging
             throw new Error(`Failed to send Discord alert. Status: ${response.status}, Body: ${responseBody}`);
         }
 
         logWithTimestamp(`Alert sent to Discord for job ${jobAddress}.`);
     } catch (error) {
-        console.error("Error sending Discord alert:", error);
+        console.error(`[Discord Alert] Error sending Discord alert for job ${jobAddress}:`, error); // Enhanced logging with job address
         throw error;
     }
 }

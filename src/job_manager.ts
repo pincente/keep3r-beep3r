@@ -38,26 +38,26 @@ export async function checkIfJobWasWorked(
     toBlock: bigint,
     provider: ethers.Provider
 ): Promise<boolean> {
-    const jobContract = new ethers.Contract(jobAddress, jobInterface, provider);
-    const workEventFragment = jobInterface.getEvent("Work");
-    if (!workEventFragment) {
-        console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
-        return false;
-    }
-
-    const workEventSignature = workEventFragment.topicHash;
-    const filter: Filter = {
-        address: jobAddress,
-        topics: [workEventSignature],
-        fromBlock: Number(fromBlock),
-        toBlock: Number(toBlock)
-    };
-
     try {
+        const jobContract = new ethers.Contract(jobAddress, jobInterface, provider);
+        const workEventFragment = jobInterface.getEvent("Work");
+        if (!workEventFragment) {
+            console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
+            return false;
+        }
+
+        const workEventSignature = workEventFragment.topicHash;
+        const filter: Filter = {
+            address: jobAddress,
+            topics: [workEventSignature],
+            fromBlock: Number(fromBlock),
+            toBlock: Number(toBlock)
+        };
+
         const events = await provider.getLogs(filter);
         return events.length > 0;
     } catch (error) {
-        console.error(`Error fetching Work events for job ${jobAddress}:`, error);
+        console.error(`Error fetching Work events for job ${jobAddress} from block ${fromBlock} to ${toBlock}:`, error); // Enhanced logging with block range
         return false;
     }
 }
