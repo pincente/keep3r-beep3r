@@ -307,7 +307,9 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 
 export async function processNewBlocks(): Promise<void> {
     try {
-        const currentBlock = BigInt(multicallProvider.getBlockNumber()); // Use multicallProvider to get block number - important to use multicall provider
+        // Modified line: Use underlying provider to get block number
+        const currentBlock = BigInt(await multicallProvider.provider.getBlockNumber());
+
         if (!lastProcessedBlock) {
             lastProcessedBlock = currentBlock - BigInt(1);
         }
