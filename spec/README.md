@@ -52,14 +52,3 @@ A GitHub repository containing the developed code, including instructions on how
 ## Expectations
 
 We expect this challenge to take between 10 to 16 hours of work.
-
-## Current Status and Alert Suppression
-
-The current version of `keep3r-beep3r` implements alert suppression to reduce noise from expected "not workable" conditions. By default, alerts are suppressed for jobs that return the following reasons from their `workable()` function:
-
-- "No ilks ready"
-- "Flap not possible"
-- "No distribution"
-- "No work to do"
-
-This list of ignored reasons can be customized by modifying the `IGNORED_ARGS_MESSAGES` array in the `src/index.ts` file.  Alerts will still be triggered for other reasons or when no specific reason is provided by the `workable()` function, ensuring that potentially actionable "unworked" conditions are still reported.
