@@ -141,7 +141,7 @@ export async function checkIfJobWasWorked(
         const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
         return events.length > 0;
     } catch (error) {
-        console.error("Error fetching Work events for job ${jobAddress}:", error);
+        console.error(`Error fetching Work events for job ${jobAddress}:`, error);
         return false;
     }
 }
@@ -321,11 +321,10 @@ export async function processNewBlocks(): Promise<void> {
         for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(1)) {
             logWithTimestamp(`[processNewBlocks] Processing block: ${block.toString()}`); // ADD LOG
             await processBlockNumber(block);
-+           lastProcessedBlock = block; // UPDATE lastProcessedBlock HERE!
+            lastProcessedBlock = block; // UPDATE lastProcessedBlock HERE!
         }
 
--       lastProcessedBlock = currentBlock; // REMOVE THIS LINE - Moved inside the loop
-+       logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG - Now logged after loop
+        logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG - Now logged after loop
 
     } catch (error) {
         console.error("Error processing new blocks:", error);
