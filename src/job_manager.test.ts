@@ -6,15 +6,16 @@ import { ethers } from 'ethers';
 jest.mock('./ethereum', () => {
     return {
         sequencerContract: {
-            numJobs: jest.fn().mockImplementation(() => Promise.resolve(BigInt(2))),
-            jobAt: jest.fn().mockImplementation(() => Promise.resolve('0xJobAddress1')),
-            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier'))
+            numJobs: jest.fn().mockImplementation(() => Promise.resolve(BigInt(2))) as any, // Added 'as any'
+            jobAt: jest.fn().mockImplementation(() => Promise.resolve('0xJobAddress1')) as any, // Added 'as any'
+            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier')) as any, // Added 'as any'
+            fragment: { name: 'getMaster' } // Minimal fragment
         },
         multicallProvider: {
             provider: {
-                getLogs: jest.fn().mockImplementation(() => Promise.resolve([]))
+                getLogs: jest.fn().mockImplementation(() => Promise.resolve([])) as any // Added 'as any'
             },
-            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850))
+            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)) as any // Added 'as any'
         }
     };
 });

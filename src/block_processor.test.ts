@@ -9,13 +9,14 @@ import { ethers } from 'ethers';
 jest.mock('./ethereum', () => {
     return {
         sequencerContract: {
-            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier')),
+            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier')) as any, // Added 'as any' to suppress strict type check for now
+            fragment: { name: 'getMaster' } // Minimal fragment
         },
         multicallProvider: {
-            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)),
+            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)) as any, // Added 'as any'
             provider: {
-                getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)),
-                getLogs: jest.fn().mockImplementation(() => Promise.resolve([]))
+                getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)) as any, // Added 'as any'
+                getLogs: jest.fn().mockImplementation(() => Promise.resolve([])) as any // Added 'as any'
             }
         },
         jobInterface: {
@@ -28,12 +29,12 @@ jest.mock('./job_manager', () => {
     return {
         ...originalModule,
         jobContracts: new Map(), // Mock jobContracts map
-        checkIfJobWasWorked: jest.fn().mockImplementation(() => Promise.resolve(false)),
+        checkIfJobWasWorked: jest.fn().mockImplementation(() => Promise.resolve(false)) as any, // Added 'as any'
         jobStates: new Map() // Mock jobStates map
     };
 });
 jest.mock('./alerting', () => ({
-    sendDiscordAlert: jest.fn().mockImplementation(() => Promise.resolve())
+    sendDiscordAlert: jest.fn().mockImplementation(() => Promise.resolve()) as any // Added 'as any'
 }));
 jest.mock('./config', () => ({
     UNWORKED_BLOCKS_THRESHOLD: BigInt(10), // Mock threshold
@@ -55,7 +56,10 @@ describe('block_processor', () => {
         // Initialize job states before each test
         await initializeJobStates(jobs);
         for (const jobAddress of jobs) {
-            jobContracts.set(jobAddress, { workable: jest.fn().mockImplementation(() => Promise.resolve([false, '0x'] )) }); // Mock workable function
+            jobContracts.set(jobAddress, {
+                workable: jest.fn().mockImplementation(() => Promise.resolve([false, '0x'] )) as any, // Mock workable function, Added 'as any'
+                fragment: { name: 'workable' } // Minimal fragment
+            });
         }
         // Mock getMaster, getBlockNumber already in module mock
     });
