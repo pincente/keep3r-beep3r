@@ -146,7 +146,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     const currentBlock = BigInt(await provider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
-    console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
+    console.log(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for 8 jobs...`);
 
     const jobInterface = new ethers.Interface(jobAbi);
     const workEventFragment = jobInterface.getEvent("Work");
@@ -220,90 +220,86 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     }
 
     const jobStatesArray = Array.from(jobStates.values());
-    const calls = jobStatesArray.map(jobState => {
-        const jobContract = new ethers.Contract(jobState.address, jobAbi, multicallProvider); // Create jobContract with MulticallProvider
-        return {
-            contract: jobContract,
-            function: 'workable',
-            args: [networkIdentifier]
-        };
-    });
 
-    try {
-        const results = await multicallProvider.all(calls); // Use multicallProvider.all
+    // Directly call workable on each jobContract through multicallProvider
+    const workableResults = await Promise.all(
+        jobStatesArray.map(async (jobState) => {
+            const jobContract = jobContracts.get(jobState.address)!; // Get jobContract from map
+            return await jobContract.workable(networkIdentifier, { provider: multicallProvider }); // Call workable with multicallProvider as option
+        })
+    );
 
-        for (let i = 0; i < jobStatesArray.length; i++) {
-            const jobState = jobStatesArray[i];
-            const result = results[i];
-            const canWork: boolean = result[0];
-            const argsBytes: string = result[1];
-            let argsString: string | null = null;
 
-            try {
-                argsString = new TextDecoder().decode(ethers.getBytes(argsBytes));
-            } catch (e) {
-                argsString = `Non-UTF8 args: ${argsBytes}`;
-            }
+    for (let i = 0; i < jobStatesArray.length; i++) {
+        const jobState = jobStatesArray[i];
+        const result = workableResults[i];
+        const canWork: boolean = result[0];
+        const argsBytes: string = result[1];
+        let argsString: string | null = null;
 
-            console.log(`workable() result for job ${jobState.address}:`, {
-                canWork: canWork,
-                args: argsString
-            });
-
-            const previousCheckedBlock = jobState.lastCheckedBlock;
-            jobState.lastCheckedBlock = blockNumber;
-
-            if (canWork) {
-                // Job needs work; increment unworked blocks
-                jobState.consecutiveUnworkedBlocks += BigInt(1);
-            } else {
-                // Job cannot be worked; check if it was worked recently
-                const wasWorked = await checkIfJobWasWorked(
-                    jobState.address,
-                    previousCheckedBlock + BigInt(1),
-                    blockNumber
-                );
-
-                if (wasWorked) {
-                    // Job was worked recently
-                    jobState.lastWorkedBlock = blockNumber;
-                    jobState.consecutiveUnworkedBlocks = BigInt(0);
-                } else {
-                    // Job was not worked; increment unworked blocks
-                    jobState.consecutiveUnworkedBlocks += blockNumber - previousCheckedBlock;
-                }
-            }
-
-            jobState.lastUpdateTime = Date.now();
-
-            if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
-                // Check if argsString is in the ignore list
-                if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
-                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log - ADDED JOB ADDRESS AND BLOCK COUNT
-                } else {
-                    await sendDiscordAlert(
-                        jobState.address,
-                        jobState.consecutiveUnworkedBlocks,
-                        blockNumber,
-                        argsString // Pass argsString to sendDiscordAlert
-                    );
-                    // Reset counter after alert to avoid repeated alerts
-                    jobState.consecutiveUnworkedBlocks = BigInt(0);
-                }
-            }
-
-            console.log(`Job ${jobState.address} state updated:`, {
-                lastWorkedBlock: jobState.lastWorkedBlock.toString(),
-                consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(),
-                lastCheckedBlock: jobState.lastCheckedBlock.toString()
-            });
+        try {
+            argsString = new TextDecoder().decode(ethers.getBytes(argsBytes));
+        } catch (e) {
+            argsString = `Non-UTF8 args: ${argsBytes}`;
         }
 
+        console.log(`workable() result for job ${jobState.address}:`, {
+            canWork: canWork,
+            args: argsString
+        });
 
-    } catch (error) {
-        console.error("Error processing workable() calls via Multicall:", error);
+        const previousCheckedBlock = jobState.lastCheckedBlock;
+        jobState.lastCheckedBlock = blockNumber;
+
+        if (canWork) {
+            // Job needs work; increment unworked blocks
+            jobState.consecutiveUnworkedBlocks += BigInt(1);
+        } else {
+            // Job cannot be worked; check if it was worked recently
+            const wasWorked = await checkIfJobWasWorked(
+                jobState.address,
+                previousCheckedBlock + BigInt(1),
+                blockNumber
+            );
+
+            if (wasWorked) {
+                // Job was worked recently
+                jobState.lastWorkedBlock = blockNumber;
+                jobState.consecutiveUnworkedBlocks = BigInt(0);
+            } else {
+                // Job was not worked; increment unworked blocks
+                jobState.consecutiveUnworkedBlocks += blockNumber - previousCheckedBlock;
+            }
+        }
+
+        jobState.lastUpdateTime = Date.now();
+
+        if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
+            // Check if argsString is in the ignore list
+            if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
+                console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log - ADDED JOB ADDRESS AND BLOCK COUNT
+            } else {
+                await sendDiscordAlert(
+                    jobState.address,
+                    jobState.consecutiveUnworkedBlocks,
+                    blockNumber,
+                    argsString // Pass argsString to sendDiscordAlert
+                );
+                // Reset counter after alert to avoid repeated alerts
+                jobState.consecutiveUnworkedBlocks = BigInt(0);
+            }
+        }
+
+        console.log(`Job ${jobState.address} state updated:`, {
+            lastWorkedBlock: jobState.lastWorkedBlock.toString(),
+            consecutiveUnworkedBlocks: jobState.consecutiveUnworkedBlocks.toString(),
+            lastCheckedBlock: jobState.lastCheckedBlock.toString()
+        });
     }
+
+
 }
+
 
 export async function processNewBlocks(): Promise<void> {
     try {
