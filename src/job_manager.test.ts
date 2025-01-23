@@ -7,6 +7,7 @@ jest.mock('./ethereum', () => ({
     sequencerContract: {
         numJobs: jest.fn(),
         jobAt: jest.fn(),
+        getMaster: jest.fn() // Mock getMaster as it's used in initializeJobStates
     },
     multicallProvider: {
         provider: {
@@ -42,6 +43,7 @@ describe('job_manager', () => {
     test('initializeJobStates should initialize job states correctly', async () => {
         const jobs = ['0x123', '0x456'];
         (multicallProvider.getBlockNumber as jest.Mock).mockResolvedValue(21684850); // Mock getBlockNumber
+        (sequencerContract.getMaster as jest.Mock).mockResolvedValue('0xNetworkIdentifier'); // Mock getMaster
 
         await initializeJobStates(jobs);
         expect(jobStates.size).toBe(jobs.length);

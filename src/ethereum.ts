@@ -7,13 +7,14 @@ import { logWithTimestamp } from './utils'; // Import logWithTimestamp
 // Import MulticallWrapper using require
 const multicallProviderLib = require('ethers-multicall-provider');
 const MulticallWrapper = multicallProviderLib.MulticallWrapper; // Use MulticallWrapper
+import { MulticallProvider } from 'ethers-multicall-provider'; // Import MulticallProvider type
 
 let provider;
-export let multicallProvider; // Export multicallProvider
+export let multicallProvider: MulticallProvider; // Export multicallProvider with type annotation
 
 try {
     provider = getDefaultProvider(ETHEREUM_RPC_URL);
-    multicallProvider = MulticallWrapper.wrap(provider);
+    multicallProvider = MulticallWrapper.wrap(provider) as MulticallProvider; // Type assertion here as well
     logWithTimestamp("Successfully connected to Ethereum provider."); // Log successful connection
 } catch (error) {
     logWithTimestamp(`Error connecting to Ethereum provider: ${error}`); // Log connection error

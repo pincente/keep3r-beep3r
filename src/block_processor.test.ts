@@ -113,7 +113,7 @@ describe('block_processor', () => {
         });
 
         it('should handle non-utf8 args gracefully', async () => {
-            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, ethers.getBytes([0x80])]); // Invalid UTF-8 byte
+            (jobContracts.get(jobs[0])!.workable as jest.Mock).mockResolvedValue([false, ethers.getBytes(Uint8Array.from([0x80]))]); // Invalid UTF-8 byte
             (checkIfJobWasWorked as jest.Mock).mockResolvedValue(false);
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD;
 
