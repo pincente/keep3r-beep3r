@@ -2,20 +2,28 @@ import { getActiveJobs, initializeJobStates, jobStates, JobState, checkIfJobWasW
 import { sequencerContract, multicallProvider } from './ethereum';
 import { ethers } from 'ethers';
 
+
+// Helper function to create mock contract methods
+const createMockContractMethod = (mockImplementation: (...args: any[]) => any, methodName: string) => {
+    const mockFn = jest.fn().mockImplementation(mockImplementation) as jest.Mock & { fragment: any };
+    mockFn.fragment = { name: methodName }; // Minimal fragment
+    return mockFn;
+};
+
+
 // Mock sequencerContract and provider for testing
 jest.mock('./ethereum', () => {
     return {
         sequencerContract: {
-            numJobs: jest.fn().mockImplementation(() => Promise.resolve(BigInt(2))) as any, // Added 'as any'
-            jobAt: jest.fn().mockImplementation(() => Promise.resolve('0xJobAddress1')) as any, // Added 'as any'
-            getMaster: jest.fn().mockImplementation(() => Promise.resolve('0xNetworkIdentifier')) as any, // Added 'as any'
-            fragment: { name: 'getMaster' } // Minimal fragment
+            numJobs: createMockContractMethod(() => Promise.resolve(BigInt(2)), 'numJobs'),
+            jobAt: createMockContractMethod(() => Promise.resolve('0xJobAddress1'), 'jobAt'),
+            getMaster: createMockContractMethod(() => Promise.resolve('0xNetworkIdentifier'), 'getMaster')
         },
         multicallProvider: {
             provider: {
-                getLogs: jest.fn().mockImplementation(() => Promise.resolve([])) as any // Added 'as any'
+                getLogs: createMockContractMethod(() => Promise.resolve([]), 'getLogs')
             },
-            getBlockNumber: jest.fn().mockImplementation(() => Promise.resolve(21684850)) as any // Added 'as any'
+            getBlockNumber: createMockContractMethod(() => Promise.resolve(21684850), 'getBlockNumber')
         }
     };
 });
