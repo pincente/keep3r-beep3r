@@ -321,10 +321,11 @@ export async function processNewBlocks(): Promise<void> {
         for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(1)) {
             logWithTimestamp(`[processNewBlocks] Processing block: ${block.toString()}`); // ADD LOG
             await processBlockNumber(block);
++           lastProcessedBlock = block; // UPDATE lastProcessedBlock HERE!
         }
 
-        lastProcessedBlock = currentBlock;
-        logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG
+-       lastProcessedBlock = currentBlock; // REMOVE THIS LINE - Moved inside the loop
++       logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG - Now logged after loop
 
     } catch (error) {
         console.error("Error processing new blocks:", error);
