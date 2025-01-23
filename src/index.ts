@@ -209,11 +209,19 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             const jobContract = jobContracts.get(jobState.address)!;
             const result = await jobContract.workable(networkIdentifier);
             const canWork: boolean = result[0]; // Access the first element (boolean)
-            const args: string = result[1];    // Access the second element (bytes)
+            const argsBytes: string = result[1];    // Access the second element (bytes)
+            let argsString: string | null = null;
+
+            try {
+                argsString = new TextDecoder().decode(ethers.getBytes(argsBytes));
+            } catch (e) {
+                argsString = `Non-UTF8 args: ${argsBytes}`;
+            }
+
 
             console.log(`workable() result for job ${jobState.address}:`, {
                 canWork: canWork,
-                args: args
+                args: argsString
             });
 
             const previousCheckedBlock = jobState.lastCheckedBlock;
