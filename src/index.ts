@@ -58,6 +58,8 @@ export async function sendDiscordAlert(
         content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}).`
     };
 
+    console.log(`Discord Webhook URL: ${webhookUrl}`); // ADD THIS LINE
+
     try {
         const response = await fetch(webhookUrl, {
             method: 'POST',
