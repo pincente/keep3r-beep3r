@@ -203,7 +203,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             jobStates.set(jobAddress, {
                 address: jobAddress,
                 lastWorkedBlock: lastWorkedBlock ?? fromBlock,
-                lastCheckedBlock: currentBlock,
+                lastCheckedBlock: currentBlock - BigInt(1), // Subtract 1 from currentBlock here
                 consecutiveUnworkedBlocks,
                 lastUpdateTime: Date.now()
             });
