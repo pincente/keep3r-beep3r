@@ -32,7 +32,8 @@ const IGNORED_ARGS_MESSAGES = [
     "No ilks ready",
     "Flap not possible",
     "No distribution",
-    "No work to do"
+    "No work to do",
+    "shouldUpdate is false"
 ];
 
 export interface JobState {

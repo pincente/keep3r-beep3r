@@ -382,6 +382,7 @@ By default, alerts are suppressed if the `workable()` function returns `false` a
 - `Flap not possible`
 - `No distribution`
 - `No work to do`
+- `shouldUpdate is false`  *(New: Added to ignored reasons)*
 
 These reasons are considered normal operational states for the monitored MakerDAO automation jobs and do not typically require immediate action. Suppressing alerts for these reasons helps to reduce noise and focus on potentially more critical issues.
 
