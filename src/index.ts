@@ -151,8 +151,8 @@ export async function checkIfJobWasWorked(
 export async function initializeJobStates(jobs: string[]): Promise<void> {
     logWithTimestamp('Initializing job states...'); // ADD LOG - start of init
     const currentBlock = BigInt(await provider.getBlockNumber());
-    // Increased block range to 10000
-    const fromBlock = currentBlock >= BigInt(10000) ? currentBlock - BigInt(10000) : BigInt(0);
+    // Increased block range to 10000 - CHANGED BACK TO 1000 as per user request
+    const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
     logWithTimestamp(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
 
@@ -217,9 +217,11 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             if (lastWorkedBlock) {
                 // Job was worked within the last 1000 blocks
                 consecutiveUnworkedBlocks = currentBlock - lastWorkedBlock;
+                logWithTimestamp(`[Initialization] Job ${jobAddress} last worked at block: ${lastWorkedBlock.toString()}`); // ADDED log for lastWorkedBlock
             } else {
                 // Job has not been worked in the last 1000 blocks (or possibly ever)
                 consecutiveUnworkedBlocks = currentBlock - fromBlock;
+                logWithTimestamp(`[Initialization] Job ${jobAddress} NOT worked in the last ${fromBlock.toString()} blocks.`); // ADDED log if not worked
             }
 
             const workableResult = workableResults[i]; // Get corresponding workable result - ADDED
