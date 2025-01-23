@@ -171,6 +171,8 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         toBlock: Number(currentBlock),
     };
 
+    logWithTimestamp(`[Initialization] Event filter: ${JSON.stringify(filter)}`); // ADDED log for event filter
+
     try {
         const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
         logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`); // ADD LOG - fetched events
