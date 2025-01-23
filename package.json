@@ -11,7 +11,8 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "ethers": "^6.13.5",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "ethers-multicall-provider": "^2.0.5"  // ADD THIS LINE
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
