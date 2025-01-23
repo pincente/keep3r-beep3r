@@ -262,7 +262,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
             if (jobState.consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
                 // Check if argsString is in the ignore list
                 if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
-                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`);
+                    console.log(`[Alert suppressed] Job ${jobState.address} unworked for ${jobState.consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`); // More informative log
                 } else {
                     await sendDiscordAlert(
                         jobState.address,
@@ -340,7 +340,7 @@ async function main() {
         }, BLOCK_CHECK_INTERVAL * 4);
 
     } catch (error) {
-        console.error("Error in main process:", error);
+        console.error("Fatal error:", error);
         process.exit(1);
     }
 }
