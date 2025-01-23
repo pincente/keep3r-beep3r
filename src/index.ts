@@ -1,13 +1,12 @@
-import { ethers, Filter, Log } from 'ethers';
+import { ethers, Filter, Log, getDefaultProvider } from 'ethers'; // Import getDefaultProvider
 import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch';
 
-// Import MulticallProvider using require - Modified import style
+// Import MulticallWrapper using require
 const multicallProviderLib = require('ethers-multicall-provider');
-const MulticallProvider = multicallProviderLib.MulticallProvider;
-
+const MulticallWrapper = multicallProviderLib.MulticallWrapper; // Use MulticallWrapper
 
 // Load environment variables from .env file
 dotenv.config();
@@ -20,13 +19,13 @@ for (const envVar of requiredEnvVars) {
     }
 }
 
-// Create the Ethereum provider and MulticallProvider
-const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
-const multicallProvider = new MulticallProvider(provider); // Create MulticallProvider
+// Create the Ethereum provider and wrap it with MulticallWrapper
+const provider = getDefaultProvider(process.env.ETHEREUM_RPC_URL); // Use getDefaultProvider
+const multicallProvider = MulticallWrapper.wrap(provider); // Wrap the provider
 
 // Define the Sequencer contract address
 const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
-const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider); // Use MulticallProvider
+const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider); // Use wrapped provider
 
 // Constants
 const BLOCK_CHECK_INTERVAL = parseInt(process.env.BLOCK_CHECK_INTERVAL || '15000');
@@ -118,7 +117,7 @@ export async function checkIfJobWasWorked(
     fromBlock: bigint,
     toBlock: bigint
 ): Promise<boolean> {
-    const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here
+    const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here - important to use regular provider, not multicall one for event logs
     const workEventFragment = jobContract.interface.getEvent("Work");
     if (!workEventFragment) {
         console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
@@ -134,7 +133,7 @@ export async function checkIfJobWasWorked(
     };
 
     try {
-        const events = await provider.getLogs(filter); // Use regular provider here
+        const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
         return events.length > 0;
     } catch (error) {
         console.error(`Error fetching Work events for job ${jobAddress}:`, error);
@@ -166,7 +165,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     };
 
     try {
-        const events = await provider.getLogs(filter); // Use regular provider here
+        const events = await provider.getLogs(filter); // Use regular provider here - important to use regular provider, not multicall one for event logs
         console.log(`Fetched ${events.length} Work events from the blockchain.`);
         const lastWorkedBlocks = new Map<string, bigint>();
 
@@ -180,7 +179,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         }
 
         for (const jobAddress of jobs) {
-            const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here
+            const jobContract = new ethers.Contract(jobAddress, jobAbi, provider); // Use regular provider here - important to use regular provider, not multicall one for event logs
             jobContracts.set(jobAddress, jobContract);
             const normalizedAddress = jobAddress.toLowerCase();
             const lastWorkedBlock = lastWorkedBlocks.get(normalizedAddress);
@@ -308,8 +307,7 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 
 export async function processNewBlocks(): Promise<void> {
     try {
-        const currentBlock = BigInt(await multicallProvider.getBlockNumber()); // Use multicallProvider to get block number
-
+        const currentBlock = BigInt(multicallProvider.getBlockNumber()); // Use multicallProvider to get block number - important to use multicall provider
         if (!lastProcessedBlock) {
             lastProcessedBlock = currentBlock - BigInt(1);
         }
@@ -337,10 +335,10 @@ function cleanupInactiveJobs(): void {
 
 async function main() {
     try {
-        const network = await multicallProvider.getNetwork(); // Use multicallProvider to get network
+        const network = await multicallProvider.getNetwork(); // Use multicallProvider to get network - important to use multicall provider
         console.log(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
 
-        const blockNumber = await multicallProvider.getBlockNumber(); // Use multicallProvider to get block number
+        const blockNumber = await multicallProvider.getBlockNumber(); // Use multicallProvider to get block number - important to use multicall provider
         console.log(`Current block number: ${blockNumber}`);
 
         const activeJobs = await getActiveJobs();
