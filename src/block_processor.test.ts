@@ -10,29 +10,32 @@ import * as jobManager from './job_manager';
 type MockJobContract = jest.Mocked<ethers.Contract>;
 
 
-
 // Mock modules and functions
-jest.mock('./ethereum', () => ({
-    sequencerContract: {
-        getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
-    },
-    multicallProvider: {
-        getBlockNumber: jest.fn().mockResolvedValue(21684850),
-        provider: {
-            getBlockNumber: jest.fn().mockResolvedValue(21684850),
-            getLogs: jest.fn().mockResolvedValue([]),
+jest.mock('./ethereum', () => {
+    const originalModule = jest.requireActual('./ethereum');
+    return {
+        ...originalModule,
+        sequencerContract: {
+            getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
         },
-    },
-    jobInterface: {
-        getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }),
-    },
-}));
+        multicallProvider: {
+            getBlockNumber: jest.fn().mockResolvedValue(21684850),
+            provider: {
+                getBlockNumber: jest.fn().mockResolvedValue(21684850),
+                getLogs: jest.fn().mockResolvedValue([]),
+            },
+        },
+        jobInterface: {
+            getEvent: jest.fn().mockReturnValue({ topicHash: '0xWorkEventTopicHash' }),
+        },
+    };
+});
 jest.mock('./job_manager', () => {
     const originalModule = jest.requireActual('./job_manager');
     return {
         ...originalModule,
         jobContracts: new Map(),
-        checkIfJobWasWorked: jest.fn().mockResolvedValue(false),
+        checkIfJobWasWorked: jest.fn().mockResolvedValue(false), // Mock checkIfJobWasWorked here
         jobStates: new Map(),
     };
 });
@@ -50,6 +53,12 @@ jest.mock('./utils', () => ({
 
 describe('block_processor', () => {
     const jobs = ['0xJobAddress1', '0xJobAddress2'];
+    let mockContract1: MockJobContract;
+    let mockContract2: MockJobContract;
+    let workableSpy1: jest.SpyInstance;
+    let workableSpy2: jest.SpyInstance;
+    let checkIfJobWasWorkedMock: jest.MockedFunction<typeof jobManager.checkIfJobWasWorked>;
+
 
     beforeEach(async () => {
         jest.clearAllMocks();
@@ -58,26 +67,34 @@ describe('block_processor', () => {
 
         // Initialize job states before each test
         await initializeJobStates(jobs);
-        for (const jobAddress of jobs) {
-            const mockContract = new ethers.Contract(jobAddress, [], multicallProvider) as jest.Mocked<ethers.Contract>;
-            mockContract.workable.mockResolvedValue([false, '0x']);
-            jobContracts.set(jobAddress, mockContract);
-        }
+
+        mockContract1 = new ethers.Contract(jobs[0], [], multicallProvider) as MockJobContract;
+        mockContract2 = new ethers.Contract(jobs[1], [], multicallProvider) as MockJobContract;
+        jobContracts.set(jobs[0], mockContract1);
+        jobContracts.set(jobs[1], mockContract2);
+
+        workableSpy1 = jest.spyOn(mockContract1, 'workable');
+        workableSpy2 = jest.spyOn(mockContract2, 'workable');
+        workableSpy1.mockResolvedValue([false, '0x']); // default mock for job1
+        workableSpy2.mockResolvedValue([true, '0x']);  // default mock for job2
+
+        checkIfJobWasWorkedMock = jobManager.checkIfJobWasWorked as jest.MockedFunction<typeof jobManager.checkIfJobWasWorked>;
+        checkIfJobWasWorkedMock.mockResolvedValue(false); // default mock for checkIfJobWasWorked
+
         // Mock getMaster, getBlockNumber already in module mock
     });
 
 
     describe('processBlockNumber', () => {
         it('should call workable for each job and update job state when workable is false and job was not worked', async () => {
-            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, '0x']); // workable returns false for job1
-            jobContracts.get(jobs[1])!.workable.mockResolvedValue([true, '0x']);  // workable returns true for job2
-            const checkIfJobWasWorkedMock = jobManager.checkIfJobWasWorked as jest.MockedFunction<typeof jobManager.checkIfJobWasWorked>;
-            checkIfJobWasWorkedMock.mockResolvedValue(false); // No Work event
+            workableSpy1.mockResolvedValueOnce([false, '0x']); // workable returns false for job1
+            workableSpy2.mockResolvedValueOnce([true, '0x']);  // workable returns true for job2
+            checkIfJobWasWorkedMock.mockResolvedValueOnce(false); // No Work event
 
             await processBlockNumber(BigInt(21684851));
 
-            expect(jobContracts.get(jobs[0])!.workable).toHaveBeenCalledTimes(1);
-            expect(jobContracts.get(jobs[1])!.workable).toHaveBeenCalledTimes(1);
+            expect(workableSpy1).toHaveBeenCalledTimes(1);
+            expect(workableSpy2).toHaveBeenCalledTimes(1);
 
             expect(jobStates.get(jobs[0])!.consecutiveUnworkedBlocks).toBe(BigInt(1001)); // Incremented for job1
             expect(jobStates.get(jobs[1])!.consecutiveUnworkedBlocks).toBe(BigInt(1));     // Incremented for job2
@@ -88,8 +105,8 @@ describe('block_processor', () => {
 
         it('should call sendDiscordAlert when consecutiveUnworkedBlocks exceeds threshold and reason is not ignored', async () => {
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD; // Set consecutiveUnworkedBlocks to threshold
-            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.toUtf8Bytes('SomeReason')]); // workable returns false with reason
-            checkIfJobWasWorked.mockResolvedValue(false);
+            workableSpy1.mockResolvedValueOnce([false, ethers.toUtf8Bytes('SomeReason')]); // workable returns false with reason
+            checkIfJobWasWorkedMock.mockResolvedValueOnce(false);
 
             await processBlockNumber(BigInt(21684852));
 
@@ -100,8 +117,8 @@ describe('block_processor', () => {
 
         it('should suppress Discord alert when reason is in IGNORED_ARGS_MESSAGES', async () => {
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD;
-            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.toUtf8Bytes('No ilks ready')]); // Reason is ignored
-            checkIfJobWasWorked.mockResolvedValue(false);
+            workableSpy1.mockResolvedValueOnce([false, ethers.toUtf8Bytes('No ilks ready')]); // Reason is ignored
+            checkIfJobWasWorkedMock.mockResolvedValueOnce(false);
 
             await processBlockNumber(BigInt(21684853));
 
@@ -110,8 +127,8 @@ describe('block_processor', () => {
         });
 
         it('should reset consecutiveUnworkedBlocks to 0 if job was worked', async () => {
-            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, '0x']); // Not workable
-            checkIfJobWasWorked.mockResolvedValue(true); // Job was worked
+            workableSpy1.mockResolvedValueOnce([false, '0x']); // Not workable
+            checkIfJobWasWorkedMock.mockResolvedValueOnce(true); // Job was worked
 
             await processBlockNumber(BigInt(21684854));
 
@@ -120,8 +137,8 @@ describe('block_processor', () => {
         });
 
         it('should handle non-utf8 args gracefully', async () => {
-            jobContracts.get(jobs[0])!.workable.mockResolvedValue([false, ethers.getBytes(Uint8Array.from([0x80]))]); // Invalid UTF-8 byte
-            checkIfJobWasWorked.mockResolvedValue(false);
+            workableSpy1.mockResolvedValueOnce([false, ethers.getBytes(Uint8Array.from([0x80]))]); // Invalid UTF-8 byte
+            checkIfJobWasWorkedMock.mockResolvedValueOnce(false);
             jobStates.get(jobs[0])!.consecutiveUnworkedBlocks = UNWORKED_BLOCKS_THRESHOLD;
 
 
@@ -136,7 +153,7 @@ describe('block_processor', () => {
 
     describe('processNewBlocks', () => {
         it('should process blocks in batches and update lastProcessedBlock', async () => {
-            (multicallProvider.provider.getBlockNumber as jest.Mock).mockResolvedValue(21684860); // Mock later block number
+            jest.spyOn(multicallProvider.provider, 'getBlockNumber').mockResolvedValue(21684860); // Mock later block number
 
             let lastBlock = BigInt(21684850); // Initial lastProcessedBlock
 

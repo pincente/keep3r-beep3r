@@ -10,24 +10,27 @@ const multicallProviderMock = multicallProvider as jest.Mocked<typeof multicallP
 import { ethers } from 'ethers';
 
 
-
-
 // Mock sequencerContract and provider for testing
-jest.mock('./ethereum', () => ({
-    sequencerContract: {
-        numJobs: jest.fn().mockResolvedValue(BigInt(2)),
-        jobAt: jest.fn()
-            .mockResolvedValueOnce('0xJobAddress1')
-            .mockResolvedValueOnce('0xJobAddress2'),
-        getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
-    },
-    multicallProvider: {
-        provider: {
-            getLogs: jest.fn().mockResolvedValue([]),
+jest.mock('./ethereum', () => {
+    const originalModule = jest.requireActual('./ethereum');
+    return {
+        ...originalModule,
+        sequencerContract: {
+            numJobs: jest.fn().mockResolvedValue(BigInt(2)),
+            jobAt: jest.fn()
+                .mockResolvedValueOnce('0xJobAddress1')
+                .mockResolvedValueOnce('0xJobAddress2'),
+            getMaster: jest.fn().mockResolvedValue('0xNetworkIdentifier'),
         },
-        getBlockNumber: jest.fn().mockResolvedValue(21684850),
-    },
-}));
+        multicallProvider: {
+            provider: {
+                getBlockNumber: jest.fn().mockResolvedValue(21684850),
+                getLogs: jest.fn().mockResolvedValue([]),
+            },
+            getBlockNumber: jest.fn().mockResolvedValue(21684850),
+        },
+    };
+});
 
 describe('job_manager', () => {
     beforeEach(() => {
@@ -36,8 +39,8 @@ describe('job_manager', () => {
     });
 
     test('getActiveJobs should return an array of job addresses', async () => {
-        sequencerContractMock.numJobs.mockResolvedValue(BigInt(2));
-        sequencerContractMock.jobAt
+        (sequencerContract.numJobs as jest.Mock).mockResolvedValue(BigInt(2));
+        (sequencerContract.jobAt as jest.Mock)
             .mockResolvedValueOnce('0xJobAddress1')
             .mockResolvedValueOnce('0xJobAddress2');
 
@@ -67,11 +70,12 @@ describe('job_manager', () => {
 
     describe('checkIfJobWasWorked', () => {
         it('should return true if Work events are found', async () => {
-            multicallProviderMock.provider.getLogs.mockResolvedValueOnce(['event1', 'event2']); // Mock with some events
+            const mockLog = { blockNumber: 123 } as ethers.Log; // Minimal Log object
+            jest.spyOn(multicallProvider.provider, 'getLogs').mockResolvedValueOnce([mockLog, mockLog]); // Mock with some events
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
-            const providerMock = { getLogs: multicallProvider.provider.getLogs } as any; // Type assertion for mock
+            const providerMock = multicallProvider.provider;
 
             const wasWorked = await checkIfJobWasWorked(jobAddress, fromBlock, toBlock, providerMock);
             expect(wasWorked).toBe(true);
@@ -79,11 +83,11 @@ describe('job_manager', () => {
         });
 
         it('should return false if no Work events are found', async () => {
-            multicallProvider.provider.getLogs.mockResolvedValueOnce([]); // Mock with no events
+            jest.spyOn(multicallProvider.provider, 'getLogs').mockResolvedValueOnce([]); // Mock with no events
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
-            const providerMock = { getLogs: multicallProvider.provider.getLogs } as any; // Type assertion for mock
+            const providerMock = multicallProvider.provider;
 
 
             const wasWorked = await checkIfJobWasWorked(jobAddress, fromBlock, toBlock, providerMock);
@@ -92,11 +96,11 @@ describe('job_manager', () => {
         });
 
         it('should handle errors when fetching Work events', async () => {
-            multicallProvider.provider.getLogs.mockRejectedValueOnce(new Error('RPC Error'));
+            jest.spyOn(multicallProvider.provider, 'getLogs').mockRejectedValueOnce(new Error('RPC Error'));
             const jobAddress = '0xJobAddress';
             const fromBlock = BigInt(100);
             const toBlock = BigInt(200);
-            const providerMock = { getLogs: multicallProvider.provider.getLogs } as any; // Type assertion for mock
+            const providerMock = multicallProvider.provider;
 
 
             const wasWorked = await checkIfJobWasWorked(jobAddress, fromBlock, toBlock, providerMock);
