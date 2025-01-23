@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import sequencerAbi from './abis/sequencerAbi.json';
 import jobAbi from './abis/IJobAbi.json';
 import fetch from 'node-fetch';
-import { MulticallProvider } from 'ethers-multicall-provider'; // Import MulticallProvider
+import MulticallProvider from 'ethers-multicall-provider'; // Modified import
 
 // Load environment variables from .env file
 dotenv.config();
