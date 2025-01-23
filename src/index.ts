@@ -338,6 +338,7 @@ export async function processNewBlocks(): Promise<void> {
 
 
         logWithTimestamp(`[processNewBlocks] lastProcessedBlock updated to: ${lastProcessedBlock.toString()}`); // ADD LOG - Now logged after loop
+        logWithTimestamp(`[processNewBlocks] Waiting for next interval. Interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minutes`); // Log waiting and interval
 
     } catch (error) {
         console.error("Error processing new blocks:", error);
@@ -372,6 +373,8 @@ async function main() {
         await initializeJobStates(activeJobs);
         // Modified log line to convert BigInts to strings
         logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
+
+        logWithTimestamp(`Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minutes`); // Log batch interval at startup
 
 
         const batchIntervalMs = BLOCK_BATCH_INTERVAL_MINUTES * 60 * 1000; // Convert minutes to milliseconds
