@@ -1,5 +1,7 @@
 # Keep3r Beep3r
 
+![Keep3r Beep3r](keep3r-beep3r.jpeg)
+
 ## Project Overview
 
 Keep3r Beep3r is a NodeJS application that monitors MakerDAO's automated jobs and sends Discord alerts if a job hasn't been worked for a certain number of consecutive blocks. The application is packaged in a Docker container for easy deployment.
