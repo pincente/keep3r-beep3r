@@ -13,6 +13,10 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-main(); // Removed .catch - for initial debug to let errors propagate
+main().catch(error => {
+    logWithTimestamp(`[Unhandled Error] Main function threw an error: ${error.message}`);
+    console.error(error);
+    process.exit(1);
+});
 
 console.log("Finished index.ts - after main() call (this should not be logged in normal operation)"); // ADDED: Log after main call
