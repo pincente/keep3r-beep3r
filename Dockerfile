@@ -32,4 +32,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/abis ./src/abis
 
 # Start the app
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "dist/app.js" ] # Changed entry point to app.js
