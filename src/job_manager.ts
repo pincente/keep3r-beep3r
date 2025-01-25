@@ -1,5 +1,5 @@
 import { ethers, Filter } from 'ethers';
-import { multicallProvider, sequencerContract, jobInterface } from './ethereum';
+import * as ethereum from './ethereum';
 import { logWithTimestamp } from './utils';
 import { IGNORED_ARGS_MESSAGES, UNWORKED_BLOCKS_THRESHOLD } from './config'; // Import UNWORKED_BLOCKS_THRESHOLD
 import { sendDiscordAlert } from './alerting'; // Import sendDiscordAlert
@@ -17,7 +17,7 @@ const jobContracts: Map<string, ethers.Contract> = new Map();
 
 export async function getActiveJobs(): Promise<string[]> {
     try {
-        const numJobs: bigint = await sequencerContract.numJobs();
+        const numJobs: bigint = await ethereum.sequencerContract.numJobs();
         const jobs: string[] = [];
 
         for (let i = BigInt(0); i < numJobs; i = i + BigInt(1)) {
@@ -39,7 +39,7 @@ export async function checkIfJobWasWorked(
     provider: ethers.Provider
 ): Promise<boolean> {
     try {
-        const jobContract = new ethers.Contract(jobAddress, jobInterface, provider);
+        const jobContract = new ethers.Contract(jobAddress, ethereum.jobInterface, provider);
         const workEventFragment = jobInterface.getEvent("Work");
         if (!workEventFragment) {
             console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
@@ -64,7 +64,7 @@ export async function checkIfJobWasWorked(
 
 export async function initializeJobStates(jobs: string[]): Promise<void> {
     logWithTimestamp('Initializing job states...');
-    const currentBlock = BigInt(await multicallProvider.getBlockNumber());
+    const currentBlock = BigInt(await ethereum.multicallProvider.getBlockNumber());
     const fromBlock = currentBlock >= BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
 
     logWithTimestamp(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
@@ -102,7 +102,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             jobContracts.set(jobAddress, jobContract);
         }
 
-        const networkIdentifier: string = await sequencerContract.getMaster();
+        const networkIdentifier: string = await ethereum.sequencerContract.getMaster();
 
         const workableResults = await Promise.all(
             jobs.map(async (jobAddress) => {

@@ -1,3 +1,4 @@
+import { multicallProvider } from './ethereum'; // Ensure ethereum is imported early
 import { getActiveJobs, initializeJobStates, cleanupInactiveJobs, jobStates } from './job_manager';
 import { processNewBlocks } from './block_processor';
 import { multicallProvider } from './ethereum';
