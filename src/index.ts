@@ -1,11 +1,11 @@
 import { logWithTimestamp } from './utils';
 import { main } from './app';
-import { sendDiscordAlert } from './alerting';
+import { sendDiscordAlert, sendDiscordInitializationMessage } from './alerting';
 
 console.log("Starting index.ts - before main() call");
 
 // Send initialization message to Discord
-sendDiscordInitializationMessage().catch(error => {
+sendDiscordInitializationMessage().catch((error: Error) => {
     console.error("Failed to send initialization message to Discord:", error);
 });
 

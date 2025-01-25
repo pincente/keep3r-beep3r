@@ -58,6 +58,7 @@ export async function sendDiscordAlert(
     }
 
     const message: DiscordMessage = {
+        content: '',  // Add empty content to satisfy interface
         embeds: [{
             title: '🚨 Job Alert',
             color: 0xFF0000, // Red
@@ -93,6 +94,7 @@ export async function sendDiscordAlert(
 
 export async function sendDiscordSystemMessage(content: string, isError: boolean = false): Promise<void> {
     const message: DiscordMessage = {
+        content: '',  // Add empty content to satisfy interface
         embeds: [{
             description: content,
             color: isError ? 0xFF0000 : 0x00FF00 // Red for errors, Green for success
