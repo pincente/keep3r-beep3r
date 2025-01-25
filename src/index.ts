@@ -1,6 +1,8 @@
 import { logWithTimestamp } from './utils';
 import { main } from './app'; // Import the main function from app.ts
 
+console.log("Starting index.ts - before main() call"); // ADDED: Very early log
+
 process.on('SIGTERM', () => {
     logWithTimestamp('Received SIGTERM. Cleaning up...');
     process.exit(0);
@@ -11,7 +13,6 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-main().catch((error) => { // Keep the catch here to handle top-level errors during startup
-    console.error("Fatal error at startup:", error);
-    process.exit(1);
-});
+main(); // Removed .catch - for initial debug to let errors propagate
+
+console.log("Finished index.ts - after main() call (this should not be logged in normal operation)"); // ADDED: Log after main call
