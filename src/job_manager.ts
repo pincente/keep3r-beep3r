@@ -84,8 +84,12 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     logWithTimestamp(`[Initialization] Event filter: ${JSON.stringify(filter)}`);
 
     try {
+        logWithTimestamp(`[Initialization] Fetching logs with filter...`);
         const events = await ethereum.multicallProvider.provider.getLogs(filter); // Use underlying provider for getLogs
-        logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`);
+        if (!events) {
+            throw new Error('Failed to fetch Work events from the blockchain');
+        }
+        logWithTimestamp(`[Initialization] Fetched ${events.length} Work events from the blockchain.`);
         const lastWorkedBlocks = new Map<string, bigint>();
 
         for (const event of events) {

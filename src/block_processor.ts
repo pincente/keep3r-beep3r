@@ -5,6 +5,11 @@ import { sendDiscordAlert } from './alerting';
 import { logWithTimestamp } from './utils';
 import { UNWORKED_BLOCKS_THRESHOLD } from './config';
 
+const MAX_BLOCKS_PER_QUERY = 999; // Ensure we never query 1000 or more blocks
+
+// Global processing flag
+let processingBlocks = false;
+
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     logWithTimestamp(`[Block ${blockNumber.toString()}] Starting processBlockNumber`);
     let networkIdentifier: string | null = null; // Initialize to null
@@ -112,7 +117,6 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
 }
 
 export async function processNewBlocks(lastProcessedBlock: bigint, blockBatchIntervalMinutes: number, blockCheckInterval: number): Promise<{ lastProcessedBlock: bigint }> {
-    let processingBlocks = false;
     if (processingBlocks) {
         logWithTimestamp("[processNewBlocks] Already processing blocks, skipping this interval.");
         return { lastProcessedBlock };
@@ -129,7 +133,10 @@ export async function processNewBlocks(lastProcessedBlock: bigint, blockBatchInt
             logWithTimestamp(`[processNewBlocks] Initializing lastProcessedBlock to: ${lastProcessedBlock.toString()}`);
         }
 
-        const blockBatchIntervalBlocks = Math.max(1, Math.floor((blockBatchIntervalMinutes * 60 * 1000) / blockCheckInterval));
+        const blockBatchIntervalBlocks = Math.min(
+            MAX_BLOCKS_PER_QUERY,
+            Math.max(1, Math.floor((blockBatchIntervalMinutes * 60 * 1000) / blockCheckInterval))
+        );
 
         for (let block = lastProcessedBlock + BigInt(1); block <= currentBlock; block = block + BigInt(blockBatchIntervalBlocks)) {
             const toBlock = block + BigInt(blockBatchIntervalBlocks) - BigInt(1) > currentBlock ? currentBlock : block + BigInt(blockBatchIntervalBlocks) - BigInt(1);
