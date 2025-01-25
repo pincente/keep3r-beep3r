@@ -1,5 +1,4 @@
 import { multicallProvider } from './ethereum';
-import { startHealthServer } from './health';
 import { getActiveJobs, initializeJobStates, cleanupInactiveJobs, jobStates } from './job_manager';
 import { processNewBlocks } from './block_processor';
 import { BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, MAX_JOB_AGE } from './config';
@@ -74,9 +73,6 @@ async function main() {
         logWithTimestamp(`[App] Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minute(s)`, "info");
         logWithTimestamp("[App] Calling sendDiscordInitializationMessage()...", "info"); // STEP LOG
 
-        logWithTimestamp("[App] Starting health check server...", "info");
-        startHealthServer();
-        logWithTimestamp("[App] Health check server started successfully.", "success");
 
         logWithTimestamp("[App] Calling setupIntervals()...", "info"); // STEP LOG
         try {
