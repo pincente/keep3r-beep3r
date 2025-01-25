@@ -42,6 +42,7 @@ async function setupIntervals() {
         }
     }, BLOCK_CHECK_INTERVAL * 4);
     logWithTimestamp(`[Interval Setup] cleanupInactiveJobs interval set to ${BLOCK_CHECK_INTERVAL * 4} ms.`);
+    logWithTimestamp("[Interval Setup] All intervals have been set up."); // Added log to confirm all intervals are set
 }
 
 
@@ -68,6 +69,7 @@ async function main() {
         setupIntervals(); // Start the intervals
         logWithTimestamp("[App] Intervals setup completed.");
         logWithTimestamp("[App] Application initialization completed successfully."); // More explicit success log
+        logWithTimestamp("[App] Entering main application loop. Intervals are now running."); // Added log to indicate main loop entry
 
 
     } catch (error) {
@@ -77,7 +79,15 @@ async function main() {
         if (cleanupJobsInterval) clearInterval(cleanupJobsInterval);
         process.exit(1);
     }
-    logWithTimestamp("[App] Main function finished execution."); // Added finish log (should not reach here in normal operation due to intervals)
+    logWithTimestamp("[App] Main function finished execution. This line should NOT be logged in normal operation."); // Added finish log (should not reach here in normal operation due to intervals)
 }
+
+// Global unhandled rejection handler
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    logWithTimestamp(`[Unhandled Rejection] Promise: ${promise}, Reason: ${reason}`);
+    // Optionally, decide if you want to exit the process here. For now, let's log and continue.
+});
+
 
 export { main };
