@@ -7,18 +7,19 @@ import { UNWORKED_BLOCKS_THRESHOLD } from './config';
 
 export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     logWithTimestamp(`[Block ${blockNumber.toString()}] Starting processBlockNumber`);
-    let networkIdentifier: string;
+    let networkIdentifier: string | null = null; // Initialize to null
     try {
         networkIdentifier = await sequencerContract.getMaster();
         logWithTimestamp(`[Block ${blockNumber.toString()}] Network Identifier: ${networkIdentifier}`);
     } catch (error) {
         console.error(`[Block ${blockNumber.toString()}] Error fetching Network Identifier:`, error); // Enhanced logging
+        logWithTimestamp(`[Block ${blockNumber.toString()}] Error details: ${error}`); // Include error details in log
         return; // Skip job processing for this block if network identifier fetch fails
     }
 
 
-    if (networkIdentifier === ethers.ZeroHash) {
-        logWithTimestamp(`[Block ${blockNumber.toString()}] No active master network. Skipping job processing.`);
+    if (networkIdentifier === null || networkIdentifier === ethers.ZeroHash) { // Check for null as well
+        logWithTimestamp(`[Block ${blockNumber.toString()}] No active master network (or error fetching). Skipping job processing.`); // More informative log
         return;
     }
 
@@ -27,15 +28,21 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     logWithTimestamp(`[Block ${blockNumber.toString()}] Fetching workable() results for ${jobStatesArray.length} jobs using Multicall...`);
     const workableCalls = jobStatesArray.map(jobState => {
         const jobContract = jobContracts.get(jobState.address)!;
-        return jobContract.workable(networkIdentifier, { provider: multicallProvider });
+        return jobContract.workable(networkIdentifier!, { provider: multicallProvider }); // Non-null assertion because of null check above
     });
 
-    let workableResults;
+    let workableResults: any[] | null = null; // Initialize to null
     try {
         workableResults = await Promise.all(workableCalls); // Execute all workable calls in parallel
     } catch (error) {
         console.error(`[Block ${blockNumber.toString()}] Error in multicall workable() calls:`, error); // Enhanced logging
+        logWithTimestamp(`[Block ${blockNumber.toString()}] Error details: ${error}`); // Include error details in log
         return; // Skip job processing for this block if workable calls fail
+    }
+
+    if (workableResults === null) { // Check for null workableResults
+        logWithTimestamp(`[Block ${blockNumber.toString()}] workableResults is null, skipping job processing.`); // Added log for null workableResults
+        return;
     }
 
 
@@ -44,6 +51,10 @@ export async function processBlockNumber(blockNumber: bigint): Promise<void> {
     for (let i = 0; i < jobStatesArray.length; i++) {
         const jobState = jobStatesArray[i];
         const result = workableResults[i];
+        if (!result) { // Check if result is undefined or null
+            logWithTimestamp(`[Block ${blockNumber.toString()}] No workable result for job ${jobState.address} at index ${i}. Skipping.`);
+            continue; // Skip to the next job if result is missing
+        }
         const canWork: boolean = result[0];
         const argsBytes: string = result[1];
         let argsString: string | null = null;
@@ -107,7 +118,7 @@ export async function processNewBlocks(lastProcessedBlock: bigint, blockBatchInt
         return { lastProcessedBlock };
     }
     processingBlocks = true;
-    logWithTimestamp("[processNewBlocks] Starting processNewBlocks");
+    logWithTimestamp(`[processNewBlocks] Starting processNewBlocks. Interval: ${blockBatchIntervalMinutes} minutes`); // Added interval log here
     try {
         const currentBlock = BigInt(await multicallProvider.provider.getBlockNumber());
         logWithTimestamp(`[processNewBlocks] Current block: ${currentBlock.toString()}`);
@@ -135,6 +146,7 @@ export async function processNewBlocks(lastProcessedBlock: bigint, blockBatchInt
 
     } catch (error) {
         console.error("Error processing new blocks:", error);
+        logWithTimestamp(`[processNewBlocks] Error details: ${error}`); // Include error details in log
     } finally {
         processingBlocks = false;
         logWithTimestamp("[processNewBlocks] Finished processNewBlocks");
