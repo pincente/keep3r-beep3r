@@ -93,7 +93,11 @@ async function main() {
         logWithTimestamp("[App] Application initialization completed successfully."); // More explicit success log
         logWithTimestamp("[App] Entering main application loop. Intervals are now running."); // Added log to indicate main loop entry
 
+        // Keep the main function running indefinitely
+        await new Promise<void>(() => {}); // Prevents main() from completing
 
+        // The following line will not be reached
+        // logWithTimestamp("[App] Main function finished execution. This line should NOT be logged in normal operation.");
     } catch (error) {
         logWithTimestamp(`[Fatal Error] Application initialization failed: ${error}`);
         console.error("Fatal error during application initialization:", error); // More descriptive error log
@@ -101,7 +105,6 @@ async function main() {
         if (cleanupJobsInterval) clearInterval(cleanupJobsInterval);
         process.exit(1);
     }
-    logWithTimestamp("[App] Main function finished execution. This line should NOT be logged in normal operation."); // Added finish log (should not reach here in normal operation due to intervals)
 }
 
 // Global unhandled rejection handler
