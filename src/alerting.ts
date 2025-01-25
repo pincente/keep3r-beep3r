@@ -64,12 +64,16 @@ export async function sendDiscordInitializationMessage(): Promise<void> { // Add
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(message),
         });
+        const responseBody = await response.text();
+
         if (!response.ok) {
-            console.error(`Failed to send Discord initialization message. Status: ${response.status}`);
+            logWithTimestamp(`Failed to send Discord initialization message. Status: ${response.status} ${response.statusText}`);
+            logWithTimestamp(`Discord API response: ${responseBody}`);
         } else {
             logWithTimestamp("Discord initialization message sent successfully.");
         }
     } catch (error) {
+        logWithTimestamp(`Error sending Discord initialization message: ${error}`);
         console.error("Error sending Discord initialization message:", error);
     }
 }
