@@ -108,7 +108,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
             jobs.map(async (jobAddress) => {
                 const jobContract = jobContracts.get(jobAddress)!;
                 logWithTimestamp(`[Initialization] Calling workable() for job ${jobAddress}`);
-                return await jobContract.workable(networkIdentifier, { provider: multicallProvider });
+                return await jobContract.workable(networkIdentifier, { provider: ethereum.multicallProvider });
             })
         );
         logWithTimestamp(`[Initialization] Received workable() results.`);
