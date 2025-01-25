@@ -11,6 +11,7 @@ let cleanupJobsInterval: NodeJS.Timeout | null = null;
 
 
 async function setupIntervals() {
+    logWithTimestamp("[Interval Setup] Starting setupIntervals function..."); // START LOG
     const batchIntervalMs = BLOCK_BATCH_INTERVAL_MINUTES * 60 * 1000;
 
     blockProcessingInterval = setInterval(async () => {
@@ -30,7 +31,6 @@ async function setupIntervals() {
     }, batchIntervalMs);
     logWithTimestamp(`[Interval Setup] processNewBlocks interval set to ${BLOCK_BATCH_INTERVAL_MINUTES} minutes.`);
 
-
     cleanupJobsInterval = setInterval(() => {
         try {
             logWithTimestamp("[Interval] Starting cleanupInactiveJobs interval execution."); // Added start log
@@ -43,30 +43,52 @@ async function setupIntervals() {
     }, BLOCK_CHECK_INTERVAL * 4);
     logWithTimestamp(`[Interval Setup] cleanupInactiveJobs interval set to ${BLOCK_CHECK_INTERVAL * 4} ms.`);
     logWithTimestamp("[Interval Setup] All intervals have been set up."); // Added log to confirm all intervals are set
+    logWithTimestamp("[Interval Setup] setupIntervals function completed SUCCESSFULLY."); // SUCCESS LOG
 }
 
 
 async function main() {
     logWithTimestamp("[App] Starting main application..."); // Added start log
+    logWithTimestamp("[App] Calling multicallProvider.getNetwork()..."); // STEP LOG
     try {
         const network = await multicallProvider.getNetwork();
-        logWithTimestamp(`Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`);
+        logWithTimestamp(`[App] Connected to Ethereum network: ${network.name} (chainId: ${network.chainId})`); // SUCCESS LOG
+        logWithTimestamp("[App] Calling multicallProvider.getBlockNumber()..."); // STEP LOG
 
         const blockNumber = await multicallProvider.getBlockNumber();
-        logWithTimestamp(`Current block number: ${blockNumber}`);
+        logWithTimestamp(`[App] Current block number: ${blockNumber}`); // SUCCESS LOG
+        logWithTimestamp("[App] Calling getActiveJobs()..."); // STEP LOG
 
         const activeJobs = await getActiveJobs();
-        logWithTimestamp(`Active Jobs: ${activeJobs}`);
+        logWithTimestamp(`[App] Active Jobs: ${activeJobs}`); // SUCCESS LOG
+        logWithTimestamp("[App] Calling initializeJobStates()..."); // STEP LOG
 
         await initializeJobStates(activeJobs);
+        logWithTimestamp("[App] initializeJobStates() completed."); // SUCCESS LOG
+        logWithTimestamp("[App] Calling multicallProvider.getBlockNumber() again for lastProcessedBlock init..."); // STEP LOG
+
         lastProcessedBlock = BigInt(await multicallProvider.getBlockNumber());
-        logWithTimestamp(`Last processed block initialized to: ${lastProcessedBlock.toString()} (current block after init)`);
-        logWithTimestamp(`Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
-        logWithTimestamp(`Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minute(s)`);
+        logWithTimestamp(`[App] Last processed block initialized to: ${lastProcessedBlock.toString()} (current block after init)`); // SUCCESS LOG
+        logWithTimestamp(`[App] Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`);
+        logWithTimestamp(`[App] Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minute(s)`);
+        logWithTimestamp("[App] Calling sendDiscordInitializationMessage()..."); // STEP LOG
 
         await sendDiscordInitializationMessage(); // Send initialization message
+        logWithTimestamp("[App] sendDiscordInitializationMessage() completed."); // SUCCESS LOG
 
-        setupIntervals(); // Start the intervals
+        logWithTimestamp("[App] Calling setupIntervals()..."); // STEP LOG
+        try {
+            await setupIntervals(); // Start the intervals
+            logWithTimestamp("[App] setupIntervals() completed SUCCESSFULLY."); // SUCCESS LOG
+        } catch (intervalsError) {
+            logWithTimestamp(`[App] ERROR in setupIntervals(): ${intervalsError}`); // ERROR LOG for intervals setup
+            console.error("Error during setupIntervals:", intervalsError);
+            if (blockProcessingInterval) clearInterval(blockProcessingInterval);
+            if (cleanupJobsInterval) clearInterval(cleanupJobsInterval);
+            process.exit(1);
+        }
+
+
         logWithTimestamp("[App] Intervals setup completed.");
         logWithTimestamp("[App] Application initialization completed successfully."); // More explicit success log
         logWithTimestamp("[App] Entering main application loop. Intervals are now running."); // Added log to indicate main loop entry
