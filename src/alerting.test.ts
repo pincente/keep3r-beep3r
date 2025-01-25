@@ -1,7 +1,9 @@
 import { sendDiscordAlert } from './alerting';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 
-jest.mock('node-fetch', () => jest.fn());
+jest.mock('node-fetch');
+
+const mockedFetch = fetch as jest.MockedFunction<typeof fetch>;
 
 describe('sendDiscordAlert', () => {
     const jobAddress = '0xJobAddress';
@@ -14,7 +16,8 @@ describe('sendDiscordAlert', () => {
     });
 
     it('should send a Discord alert successfully', async () => {
-        (fetch as jest.Mock).mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue('') });
+        const response = new Response('', { status: 200, statusText: 'OK' });
+        mockedFetch.mockResolvedValue(response);
 
         await sendDiscordAlert(jobAddress, unworkedBlocks, currentBlock, argsString);
 
@@ -29,7 +32,7 @@ describe('sendDiscordAlert', () => {
     });
 
     it('should handle network errors gracefully', async () => {
-        (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+        mockedFetch.mockRejectedValue(new Error('Network error'));
 
         await expect(sendDiscordAlert(jobAddress, unworkedBlocks, currentBlock, argsString)).rejects.toThrow('Network error');
     });
