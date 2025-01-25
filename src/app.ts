@@ -1,4 +1,5 @@
-import { multicallProvider } from './ethereum'; // Ensure ethereum is imported early
+import { multicallProvider } from './ethereum';
+import { startHealthServer } from './health';
 import { getActiveJobs, initializeJobStates, cleanupInactiveJobs, jobStates } from './job_manager';
 import { processNewBlocks } from './block_processor';
 import { BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, MAX_JOB_AGE } from './config';
@@ -72,6 +73,10 @@ async function main() {
         logWithTimestamp(`[App] Job states initialized: ${JSON.stringify(Array.from(jobStates.values()).map(state => ({ ...state, lastWorkedBlock: state.lastWorkedBlock.toString(), consecutiveUnworkedBlocks: state.consecutiveUnworkedBlocks.toString(), lastCheckedBlock: state.lastCheckedBlock.toString() }))) }`, "success");
         logWithTimestamp(`[App] Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minute(s)`, "info");
         logWithTimestamp("[App] Calling sendDiscordInitializationMessage()...", "info"); // STEP LOG
+
+        logWithTimestamp("[App] Starting health check server...", "info");
+        startHealthServer();
+        logWithTimestamp("[App] Health check server started successfully.", "success");
 
         logWithTimestamp("[App] Calling setupIntervals()...", "info"); // STEP LOG
         try {
