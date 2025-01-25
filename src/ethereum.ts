@@ -10,6 +10,10 @@ const MulticallWrapper = multicallProviderLib.MulticallWrapper; // Use Multicall
 import { MulticallProvider } from 'ethers-multicall-provider'; // Import MulticallProvider type
 
 
+export const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
+let sequencerContract: ethers.Contract;
+let jobInterface: ethers.Interface;
+
 let provider;
 export let multicallProvider: MulticallProvider; // Export multicallProvider with type annotation
 
@@ -25,11 +29,6 @@ try {
     process.exit(1); // Exit if provider connection fails
     logWithTimestamp('Contracts initialized successfully.');
 }
-
-
-export const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
-let sequencerContract: ethers.Contract;
-let jobInterface: ethers.Interface;
 
 export function initializeContracts() {
     logWithTimestamp(`Initializing contracts...`);
