@@ -9,6 +9,7 @@ const multicallProviderLib = require('ethers-multicall-provider');
 const MulticallWrapper = multicallProviderLib.MulticallWrapper; // Use MulticallWrapper
 import { MulticallProvider } from 'ethers-multicall-provider'; // Import MulticallProvider type
 
+
 let provider;
 export let multicallProvider: MulticallProvider; // Export multicallProvider with type annotation
 
@@ -22,6 +23,7 @@ try {
     logWithTimestamp(`Error connecting to Ethereum provider: ${error}`); // Log connection error
     console.error("Fatal error connecting to Ethereum provider:", error);
     process.exit(1); // Exit if provider connection fails
+    logWithTimestamp('Contracts initialized successfully.');
 }
 
 
@@ -30,7 +32,24 @@ let sequencerContract: ethers.Contract;
 let jobInterface: ethers.Interface;
 
 export function initializeContracts() {
-    sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider);
+    logWithTimestamp(`Initializing contracts...`);
+
+    logWithTimestamp(`SEQUENCER_ADDRESS: ${SEQUENCER_ADDRESS}`);
+    if (!SEQUENCER_ADDRESS) {
+        throw new Error('SEQUENCER_ADDRESS is undefined');
+    }
+
+    logWithTimestamp(`sequencerAbi: ${JSON.stringify(sequencerAbi)}`);
+    if (!sequencerAbi) {
+        throw new Error('sequencerAbi is undefined');
+    }
+
+    logWithTimestamp(`multicallProvider is ${multicallProvider ? 'initialized' : 'not initialized'}`);
+    if (!multicallProvider) {
+        throw new Error('multicallProvider is undefined');
+    }
+
+    // Now initialize the contracts
     jobInterface = new ethers.Interface(jobAbi);
 }
 
