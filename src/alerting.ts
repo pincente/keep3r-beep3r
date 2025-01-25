@@ -41,3 +41,35 @@ export async function sendDiscordAlert(
         throw error;
     }
 }
+
+export async function sendDiscordInitializationMessage(): Promise<void> { // Added export keyword here
+    const webhookUrl = DISCORD_WEBHOOK_URL;
+
+    if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
+        logWithTimestamp(`[Discord Init - LOCAL MODE] Application started in local mode. Initialization message suppressed.`);
+        return;
+    }
+    if (!webhookUrl) {
+        logWithTimestamp("Discord webhook URL not configured, initialization message not sent.");
+        return;
+    }
+
+    const message = {
+        content: "🚀 keep3r-beep3r application started successfully."
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(message),
+        });
+        if (!response.ok) {
+            console.error(`Failed to send Discord initialization message. Status: ${response.status}`);
+        } else {
+            logWithTimestamp("Discord initialization message sent successfully.");
+        }
+    } catch (error) {
+        console.error("Error sending Discord initialization message:", error);
+    }
+}
