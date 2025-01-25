@@ -31,5 +31,8 @@ RUN npm install --production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/abis ./src/abis
 
+# Expose port for health check endpoint
+EXPOSE 3000
+
 # Start the app
 CMD ["node", "dist/index.js"]
