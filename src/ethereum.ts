@@ -16,6 +16,8 @@ try {
     provider = getDefaultProvider(ETHEREUM_RPC_URL);
     multicallProvider = MulticallWrapper.wrap(provider) as MulticallProvider; // Type assertion here as well
     logWithTimestamp("Successfully connected to Ethereum provider."); // Log successful connection
+    // Initialize contracts after multicallProvider is ready
+    initializeContracts();
 } catch (error) {
     logWithTimestamp(`Error connecting to Ethereum provider: ${error}`); // Log connection error
     console.error("Fatal error connecting to Ethereum provider:", error);
@@ -24,5 +26,12 @@ try {
 
 
 export const SEQUENCER_ADDRESS = '0x238b4E35dAed6100C6162fAE4510261f88996EC9';
-export const sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider);
-export const jobInterface = new ethers.Interface(jobAbi);
+let sequencerContract: ethers.Contract;
+let jobInterface: ethers.Interface;
+
+export function initializeContracts() {
+    sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider);
+    jobInterface = new ethers.Interface(jobAbi);
+}
+
+export { sequencerContract, jobInterface };
