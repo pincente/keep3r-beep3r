@@ -117,4 +117,3 @@ npm test
 - The `UNWORKED_BLOCKS_THRESHOLD` in the `.env` file determines how many blocks a job can remain unworked before an alert is triggered. The default is 1000 blocks, but you can adjust this value. For testing purposes, you may want to lower this threshold.
 - The `BLOCK_BATCH_INTERVAL` in the `.env` file determines the interval in minutes at which blocks are processed in batches. The default is 5 minutes. Adjust this value to control the frequency of block processing and alerts.
 - The application now includes alert suppression for common "not workable" reasons. See the "Alert Suppression Feature Details" section in this README and the `IGNORED_ARGS_MESSAGES` array in `src/index.ts` for the list of suppressed reasons and how to customize it.
-- For further improvements, consider implementing more comprehensive tests and integrating a more robust logging library for better observability.
