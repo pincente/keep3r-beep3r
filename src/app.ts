@@ -73,9 +73,6 @@ async function main() {
         logWithTimestamp(`[App] Block batch interval: ${BLOCK_BATCH_INTERVAL_MINUTES} minute(s)`, "info");
         logWithTimestamp("[App] Calling sendDiscordInitializationMessage()...", "info"); // STEP LOG
 
-        await sendDiscordInitializationMessage(); // Send initialization message
-        logWithTimestamp("[App] sendDiscordInitializationMessage() completed.", "success"); // SUCCESS LOG
-
         logWithTimestamp("[App] Calling setupIntervals()...", "info"); // STEP LOG
         try {
             await setupIntervals(); // Start the intervals

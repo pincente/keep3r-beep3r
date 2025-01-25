@@ -151,19 +151,12 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
                 lastUpdateTime: Date.now()
             });
 
-            // Check for alert condition during initialization
+            // Only log initialization status, don't send alerts during init
             if (consecutiveUnworkedBlocks >= UNWORKED_BLOCKS_THRESHOLD) {
                 if (argsString && IGNORED_ARGS_MESSAGES.includes(argsString)) {
                     logWithTimestamp(`[Alert suppressed - Initialization] Job ${jobAddress} unworked for ${consecutiveUnworkedBlocks.toString()} blocks due to ignored reason: ${argsString}`);
                 } else {
-                    await sendDiscordAlert(
-                        jobAddress,
-                        consecutiveUnworkedBlocks,
-                        currentBlock,
-                        argsString
-                    );
-                    // Reset counter after alert to avoid repeated alerts during init
-                    jobStates.get(jobAddress)!.consecutiveUnworkedBlocks = BigInt(0);
+                    logWithTimestamp(`[Initialization] Job ${jobAddress} has been unworked for ${consecutiveUnworkedBlocks.toString()} blocks`);
                 }
             }
         }
