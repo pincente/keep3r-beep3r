@@ -5,12 +5,7 @@ import { sendDiscordAlert } from './alerting';
 console.log("Starting index.ts - before main() call");
 
 // Send initialization message to Discord
-sendDiscordAlert(
-    "SYSTEM",
-    BigInt(0),
-    BigInt(0),
-    "🟢 Keep3r-Beep3r monitoring system starting up..."
-).catch(error => {
+sendDiscordInitializationMessage().catch(error => {
     console.error("Failed to send initialization message to Discord:", error);
 });
 

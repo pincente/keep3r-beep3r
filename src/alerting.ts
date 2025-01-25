@@ -2,78 +2,106 @@ import fetch from 'node-fetch';
 import { DISCORD_WEBHOOK_URL } from './config';
 import { logWithTimestamp } from './utils';
 
+// Interface for different message types
+interface DiscordMessage {
+    content: string;
+    embeds?: Array<{
+        title?: string;
+        description?: string;
+        color?: number;
+        fields?: Array<{
+            name: string;
+            value: string;
+            inline?: boolean;
+        }>;
+    }>;
+}
+
+async function sendDiscordMessage(message: DiscordMessage): Promise<void> {
+    const webhookUrl = DISCORD_WEBHOOK_URL;
+
+    if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
+        logWithTimestamp(`[Discord - LOCAL MODE] ${message.content}`);
+        return;
+    }
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(message),
+        });
+
+        const responseBody = await response.text();
+
+        if (!response.ok) {
+            logWithTimestamp(`[Discord] Failed to send message. Status: ${response.status}, Body: ${responseBody}`);
+            throw new Error(`Failed to send Discord message. Status: ${response.status}, Body: ${responseBody}`);
+        }
+
+        logWithTimestamp(`[Discord] Message sent successfully.`);
+    } catch (error) {
+        console.error(`[Discord] Error sending message:`, error);
+        throw error;
+    }
+}
+
 export async function sendDiscordAlert(
     jobAddress: string,
     unworkedBlocks: bigint,
     currentBlock: bigint,
     argsString: string | null
 ): Promise<void> {
-    const webhookUrl = DISCORD_WEBHOOK_URL;
-
-    if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
-        logWithTimestamp(`[Discord Alert - LOCAL MODE] Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`);
+    // Don't send regular job alerts for system messages
+    if (jobAddress === 'SYSTEM') {
         return;
     }
 
-    const message = {
-        content: `🚨 Alert! Job ${jobAddress} hasn't been worked for ${unworkedBlocks.toString()} blocks (current block: ${currentBlock.toString()}). Reason: ${argsString}`
+    const message: DiscordMessage = {
+        embeds: [{
+            title: '🚨 Job Alert',
+            color: 0xFF0000, // Red
+            fields: [
+                {
+                    name: 'Job Address',
+                    value: jobAddress,
+                    inline: true
+                },
+                {
+                    name: 'Unworked Blocks',
+                    value: unworkedBlocks.toString(),
+                    inline: true
+                },
+                {
+                    name: 'Current Block',
+                    value: currentBlock.toString(),
+                    inline: true
+                }
+            ]
+        }]
     };
 
-    logWithTimestamp(`Discord Webhook URL: ${webhookUrl}`);
-
-    try {
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(message),
+    if (argsString) {
+        message.embeds![0].fields!.push({
+            name: 'Reason',
+            value: argsString
         });
-
-        const responseBody = await response.text();
-
-        if (!response.ok) {
-            logWithTimestamp(`[Discord Alert] Failed to send alert for job ${jobAddress}. Status: ${response.status}, Body: ${responseBody}`); // Enhanced logging
-            throw new Error(`Failed to send Discord alert. Status: ${response.status}, Body: ${responseBody}`);
-        }
-
-        logWithTimestamp(`Alert sent to Discord for job ${jobAddress}.`);
-    } catch (error) {
-        console.error(`[Discord Alert] Error sending Discord alert for job ${jobAddress}:`, error); // Enhanced logging with job address
-        throw error;
     }
+
+    await sendDiscordMessage(message);
 }
 
-export async function sendDiscordInitializationMessage(): Promise<void> { // Added export keyword here
-    const webhookUrl = DISCORD_WEBHOOK_URL;
-
-    if (webhookUrl.trim().toUpperCase() === 'LOCAL') {
-        logWithTimestamp(`[Discord Init - LOCAL MODE] Application started in local mode. Initialization message suppressed.`);
-        return;
-    }
-    if (!webhookUrl) {
-        logWithTimestamp("Discord webhook URL not configured, initialization message not sent.");
-        return;
-    }
-
-    const message = {
-        content: "🚀 keep3r-beep3r application started successfully."
+export async function sendDiscordSystemMessage(content: string, isError: boolean = false): Promise<void> {
+    const message: DiscordMessage = {
+        embeds: [{
+            description: content,
+            color: isError ? 0xFF0000 : 0x00FF00 // Red for errors, Green for success
+        }]
     };
 
-    try {
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(message),
-        });
-        const responseBody = await response.text();
+    await sendDiscordMessage(message);
+}
 
-        if (!response.ok) {
-            logWithTimestamp(`Failed to send Discord initialization message. Status: ${response.status} ${response.statusText}`);
-            logWithTimestamp(`Discord API response: ${responseBody}`);
-        } else {
-            logWithTimestamp("Discord initialization message sent successfully.");
-        }
-    } catch (error) {
-        logWithTimestamp(`Error sending Discord initialization message: ${error}`);
-        console.error("Error sending Discord initialization message:", error);
-    }
+export async function sendDiscordInitializationMessage(): Promise<void> {
+    await sendDiscordSystemMessage('🚀 keep3r-beep3r monitoring system starting up...');
 }
