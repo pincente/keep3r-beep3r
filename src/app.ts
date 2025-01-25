@@ -1,7 +1,6 @@
 import { multicallProvider } from './ethereum'; // Ensure ethereum is imported early
 import { getActiveJobs, initializeJobStates, cleanupInactiveJobs, jobStates } from './job_manager';
 import { processNewBlocks } from './block_processor';
-import { multicallProvider } from './ethereum';
 import { BLOCK_CHECK_INTERVAL, BLOCK_BATCH_INTERVAL_MINUTES, MAX_JOB_AGE } from './config';
 import { logWithTimestamp } from './utils';
 import { sendDiscordInitializationMessage } from './alerting'; // Import the new function

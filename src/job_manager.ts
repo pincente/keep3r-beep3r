@@ -21,7 +21,7 @@ export async function getActiveJobs(): Promise<string[]> {
         const jobs: string[] = [];
 
         for (let i = BigInt(0); i < numJobs; i = i + BigInt(1)) {
-            const jobAddress: string = await sequencerContract.jobAt(i);
+            const jobAddress: string = await ethereum.sequencerContract.jobAt(i);
             jobs.push(jobAddress);
         }
 
@@ -40,7 +40,7 @@ export async function checkIfJobWasWorked(
 ): Promise<boolean> {
     try {
         const jobContract = new ethers.Contract(jobAddress, ethereum.jobInterface, provider);
-        const workEventFragment = jobInterface.getEvent("Work");
+        const workEventFragment = ethereum.jobInterface.getEvent("Work");
         if (!workEventFragment) {
             console.error(`Event 'Work' not found in job interface for job ${jobAddress}.`);
             return false;
@@ -69,7 +69,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
 
     logWithTimestamp(`Fetching Work events from block ${fromBlock.toString()} to ${currentBlock.toString()} for ${jobs.length} jobs...`);
 
-    const workEventFragment = jobInterface.getEvent("Work");
+    const workEventFragment = ethereum.jobInterface.getEvent("Work");
     if (!workEventFragment) {
         throw new Error("Event 'Work' not found in job interface.");
     }
@@ -84,7 +84,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
     logWithTimestamp(`[Initialization] Event filter: ${JSON.stringify(filter)}`);
 
     try {
-        const events = await multicallProvider.provider.getLogs(filter); // Use underlying provider for getLogs
+        const events = await ethereum.multicallProvider.provider.getLogs(filter); // Use underlying provider for getLogs
         logWithTimestamp(`Fetched ${events.length} Work events from the blockchain.`);
         const lastWorkedBlocks = new Map<string, bigint>();
 
@@ -98,7 +98,7 @@ export async function initializeJobStates(jobs: string[]): Promise<void> {
         }
 
         for (const jobAddress of jobs) {
-            const jobContract = new ethers.Contract(jobAddress, jobInterface, multicallProvider.provider); // Use underlying provider here
+            const jobContract = new ethers.Contract(jobAddress, ethereum.jobInterface, ethereum.multicallProvider.provider); // Use underlying provider here
             jobContracts.set(jobAddress, jobContract);
         }
 
