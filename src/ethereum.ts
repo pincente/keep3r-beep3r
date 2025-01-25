@@ -49,7 +49,10 @@ export function initializeContracts() {
     }
 
     // Now initialize the contracts
+    sequencerContract = new ethers.Contract(SEQUENCER_ADDRESS, sequencerAbi, multicallProvider);
     jobInterface = new ethers.Interface(jobAbi);
+
+    logWithTimestamp('Contracts initialized successfully.');
 }
 
 export { sequencerContract, jobInterface };
