@@ -45,7 +45,7 @@ Add or remove strings from this array to tailor the alert suppression behavior t
    cd keep3r-beep3r
    ```
 
-2. **Install dependencies:**
+2. **Install dependencies (only for local testing, not required for running in docker):**
 
    ```bash
    npm install
@@ -77,7 +77,7 @@ Add or remove strings from this array to tailor the alert suppression behavior t
 
 ## Building the Application
 
-1. **Build the TypeScript code:**
+1. **Build the TypeScript code (only for local testing, not required for running in docker):**
 
    ```bash
    npm run build
@@ -91,7 +91,7 @@ Add or remove strings from this array to tailor the alert suppression behavior t
 
 ## Running the Application
 
-1. **Running locally:**
+1. **Running locally (only for local testing, not required for running in docker):**
 
    ```bash
    npm start
@@ -105,7 +105,7 @@ Add or remove strings from this array to tailor the alert suppression behavior t
 
 ## Testing
 
-Run tests using:
+Run tests using (only for local testing, not required for running in docker):
 
 ```bash
 npm test
