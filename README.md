@@ -4,6 +4,8 @@
 
 ## Project Overview
 
+**Experimental Notice**: This application was 100% developed by AI and should be considered experimental. While it has been tested, it may contain unexpected behavior or bugs. Use at your own discretion and monitor its operation closely.
+
 Keep3r Beep3r is a NodeJS application that monitors **jobs listed in the MakerDAO's Sequencer contract** and sends Discord alerts if a job hasn't been worked for a certain number of consecutive blocks. The application is packaged in a Docker container for easy deployment.
 
 By default, alerts are suppressed for jobs that are not workable due to the following reasons (as indicated by the `workable()` function): "No ilks ready", "Flap not possible", "No distribution", and "No work to do", and "shouldUpdate is false".  This is because these reasons often represent normal waiting states for the jobs. Alerts are still triggered for other reasons or when no specific reason is provided by the `workable()` function.
